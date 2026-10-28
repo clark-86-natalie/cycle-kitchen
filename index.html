@@ -70,6 +70,8 @@ button,input,select{font:inherit;color:inherit;-webkit-tap-highlight-color:trans
 .chip{appearance:none;border:0;border-radius:999px;padding:8px 16px;min-height:44px;background:var(--surface2);color:var(--fg);font-size:.9rem;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
 .link{appearance:none;background:none;border:0;padding:0;min-height:44px;display:inline-flex;align-items:center;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-weight:500}
+.sel{appearance:none;background:var(--surface2);border:0;border-radius:12px;padding:10px 40px 10px 12px;width:100%;min-height:48px;font-size:16px;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 20px) 21px,calc(100% - 14px) 21px;background-size:6px 6px;background-repeat:no-repeat}
+.sel:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 input[type=date],input[type=text],input[type=number]{background:var(--surface2);border:0;border-radius:12px;padding:10px 12px;width:100%;min-width:0;min-height:48px;font-size:16px}
 
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
@@ -126,8 +128,8 @@ table.hist{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums
 table.hist td,table.hist th{padding:8px 0;border-top:1px solid var(--line);text-align:left}
 table.hist th{font-weight:600;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;border-top:0}
 table.hist td:last-child,table.hist th:last-child{text-align:right}
-ul.clean{margin:0;padding-left:18px}
-ul.clean li+li{margin-top:6px}
+.clean{margin:0;padding-left:20px}
+.clean li+li{margin-top:6px}
 .stat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .stat .card .v{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){body{transition:none}}
@@ -261,6 +263,43 @@ const SUPPS=[
   {k:"calcium",n:"Calcium",stage:["peri"],phase:[],what:"Bone density drops as oestrogen falls. Food first, supplement if you don't get enough.",nudge:null},
   {k:"zinc",n:"Zinc",stage:["cycle"],phase:["follicular"],what:"Supports skin, immunity and healthy ovulation.",nudge:null}
 ];
+const TRACKERS=[
+  {k:"flo",n:"Flo",slow:1,speed:"Not instant. Flo emails it to you after you ask, which can take a few days.",
+    steps:["In the Flo app, open Help and choose to contact Flo","Ask for a copy of your data","When the email arrives, download the file and upload it here"],
+    link:"https://help.flo.health/hc/en-us/articles/360054973811-How-do-I-get-a-copy-of-my-data",file:"The file Flo emails you"},
+  {k:"clue",n:"Clue",slow:1,speed:"Arrives by email. The download link only lasts 72 hours.",
+    steps:["In Clue, open the menu, then Settings, then Download my data","Copy the password the app shows you","Download the file from Clue's email and unzip it using that password","Upload the JSON file from inside"],
+    link:"https://support.helloclue.com/hc/en-us/articles/17320910724125-How-do-I-get-a-copy-of-my-Clue-data",file:"The JSON file from Clue's zip"},
+  {k:"nc",n:"Natural Cycles",speed:"Self-service. The main email usually arrives straight away.",
+    steps:["Open Natural Cycles' data download page from the link below and sign in","Check your email (and spam) for a zip of CSV files","Upload the zip, or the daily entries CSV inside it"],
+    link:"https://help.naturalcycles.com/hc/en-us/articles/360006693938-Download-your-Natural-Cycles-data",file:"The zip, or the daily entries CSV"},
+  {k:"apple",n:"Apple Health (iPhone)",speed:"Instant, though it can take a few minutes to prepare.",
+    steps:["Open the Health app and tap your profile picture","Tap Export All Health Data and save the file","Upload export.zip here"],
+    file:"export.zip, or export.xml from inside it"},
+  {k:"samsung",n:"Samsung Health",speed:"Instant from your phone.",
+    steps:["In Samsung Health, open Settings","Look for Download personal data and follow the steps","Upload the cycle tracking CSV file it creates"],
+    file:"The cycle tracking CSV"},
+  {k:"garmin",n:"Garmin Connect",slow:1,manual:1,speed:"Garmin only offers a full account export, which takes days and is hard to read.",
+    steps:["We can't read Garmin's export yet, so adding your last few dates below is the quickest way"],
+    link:"https://www.garmin.com/en-US/account/datamanagement/"},
+  {k:"other",n:"Another app",speed:"Depends on the app.",
+    steps:["Look in the app's settings or help pages for Export or Download my data","Upload the file it gives you (JSON, CSV or zip)"],file:"JSON, CSV or zip"},
+  {k:"none",n:"I don't track yet",manual:1,speed:"",steps:["No problem. Add the dates you remember below, even just your last period."]}
+];
+function trackerBlock(prefix,chosen,msg){
+  const tr=TRACKERS.find(x=>x.k===chosen);
+  return `<div class="drop stack" style="text-align:left">
+    <label for="${prefix}-tracker"><b>Which app do you use now?</b></label>
+    <select id="${prefix}-tracker" class="sel"><option value="">Choose your app</option>${TRACKERS.map(t=>`<option value="${t.k}" ${t.k===chosen?"selected":""}>${esc(t.n)}</option>`).join("")}</select>
+    ${tr?`<div class="stack">
+      ${tr.speed?`<p class="small"><b>${tr.slow?"Takes a while":"Quick"}:</b> ${esc(tr.speed)}</p>`:""}
+      <ol class="clean small">${tr.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+      ${tr.link?`<a class="link small" href="${tr.link}" target="_blank" rel="noopener">${esc(tr.n)}'s help page ↗</a>`:""}
+      ${tr.manual?"":`<p class="small muted">Upload: ${esc(tr.file)}</p><label class="btn ghost small" style="align-self:flex-start">Choose file<input type="file" id="${prefix}-file" accept=".json,.csv,.txt,.xml,.zip,application/json,text/csv,application/zip,text/xml" hidden></label>`}
+    </div>`:""}
+    ${msg?`<p class="small" role="status">${esc(msg)}</p>`:""}
+  </div>`;
+}
 const PERI_HELPS=[
   ["Strength training","Two or three sessions a week protects muscle and bone and helps mood and blood sugar."],
   ["Protein at every meal","Needs rise as oestrogen dips. Aim for a palm-sized portion each time."],
@@ -445,7 +484,7 @@ function viewCycle(){
   <section class="card stack"><div class="row" style="justify-content:space-between"><h2>History</h2><button class="btn small" data-act="log">Log a period</button></div>
     ${rows?`<div style="overflow-x:auto"><table class="hist"><thead><tr><th>Started</th><th>Period</th><th>Cycle</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<p class="muted small">Nothing here yet.</p>`}
   </section>
-  <section class="card soft stack"><h3>Import from another app</h3><p class="small muted">Bring in your history from Flo or another tracker. You can keep logging here afterwards.</p><button class="btn ghost small" data-act="import" style="align-self:flex-start">Import a file</button></section>
+  <section class="card soft stack"><h3>Import from another app</h3><p class="small muted">${(()=>{const tr=TRACKERS.find(x=>x.k===S.tracker);return tr&&tr.slow&&!tr.manual?`Waiting on your ${esc(tr.n)} export? Import it here when it arrives to fill in your full history.`:"Bring in your history from Flo or another tracker. You can keep logging here afterwards."})()}</p><button class="btn ghost small" data-act="import" style="align-self:flex-start">Import a file</button></section>
   </div>`;
 }
 
@@ -499,7 +538,7 @@ function viewMore(){
 
 /* ---------- onboarding ---------- */
 function startOnboarding(){
-  ui.ob={step:0,data:{stage:"cycle",periods:[],periodLen:5,allergies:[],diets:[],otherAllergy:"",supps:[],source:""},manual:[""],importMsg:""};
+  ui.ob={step:0,data:{stage:"cycle",periods:[],periodLen:5,allergies:[],diets:[],otherAllergy:"",supps:[],source:""},manual:[""],importMsg:"",tracker:""};
   render();
 }
 function viewOnboarding(){
@@ -520,11 +559,11 @@ function viewOnboarding(){
       <button class="opt" data-pick="peri" aria-pressed="${d.stage==="peri"}"><span><b>Noticing changes</b><span class="small muted">Irregular cycles, hot flushes, broken sleep or other signs of perimenopause</span></span></button>
     </div>${nav("next")}`;
   }else if(o.step===2){
-    body=`<span class="label">Step 2 of 4</span><h1>Your cycle history</h1><p class="muted">Import from another app, or add your last few period start dates. The more you add, the better the predictions.</p>
-    <div class="drop stack"><b>Import from Flo or another tracker</b><p class="small muted">In Flo you can request a copy of your data from its settings. It arrives by email as a file. Upload it here (JSON or CSV).</p>
-      <label class="btn ghost small" style="align-self:center">Choose file<input type="file" id="ob-file" accept=".json,.csv,.txt,application/json,text/csv" hidden></label>
-      ${o.importMsg?`<p class="small" role="status">${esc(o.importMsg)}</p>`:""}</div>
-    <div class="card stack"><b>Or add dates yourself</b>
+    const tr=TRACKERS.find(x=>x.k===o.tracker);
+    body=`<span class="label">Step 2 of 4</span><h1>Your cycle history</h1><p class="muted">Bring in your history from the app you use now, or add your last few period start dates. The more you add, the better the predictions.</p>
+    ${trackerBlock("ob",o.tracker,o.importMsg)}
+    <div class="card stack"><b>${tr&&tr.slow?"Add a few dates for now":tr&&tr.k!=="none"?"Or add dates yourself":"Add your period dates"}</b>
+      ${tr&&tr.slow?`<p class="small muted">Your export can take a while to arrive, so add your last few start dates to get going. You can import the full history later from the Cycle tab.</p>`:""}
       ${o.manual.map((v,i)=>`<label class="small muted" for="pd-${i}">Period ${i===0?"started most recently":"before that"}</label><input type="date" id="pd-${i}" data-manual="${i}" value="${esc(v)}" max="${todayISO()}">`).join("")}
       <button class="link small" data-ob="addrow" style="align-self:flex-start">Add another date</button>
       <label class="small muted" for="pl">Usual period length (days)</label><input type="number" id="pl" min="2" max="10" value="${d.periodLen}">
@@ -562,7 +601,7 @@ function obNext(){
 }
 function finishOnboarding(){
   obReadManual();const d=ui.ob.data;
-  S={v:1,sample:false,onboarded:true,stage:d.stage,periods:d.periods,periodLen:d.periodLen,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,suppCheck:todayISO(),logs:{},source:d.source||"Logged in Cycle Kitchen"};
+  S={v:1,sample:false,onboarded:true,stage:d.stage,periods:d.periods,periodLen:d.periodLen,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,suppCheck:todayISO(),logs:{},tracker:ui.ob.tracker||"",source:d.source||"Logged in Cycle Kitchen"};
   ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("You're all set");
 }
 
@@ -599,19 +638,71 @@ function parseExport(text){
       else if(!s&&/period|menstru|bleed|flow/.test(typeStr)){const dk=keys.find(k=>/date|day|time/i.test(k)&&toDate(o[k]));if(dk)days.push(toDate(o[dk]))}
       for(const k of keys){if(o[k]&&typeof o[k]==="object")walk(o[k],ctx+" "+k.toLowerCase())}
     })(json,"");
+  }else if(/^\s*</.test(text)){
+    appleLines(text.split(/\n/),days);
   }else{
-    text.split(/\r?\n/).forEach(line=>{const ds=(line.match(/\d{4}-\d{2}-\d{2}|\d{1,2}[\/.]\d{1,2}[\/.]\d{4}/g)||[]).map(toDate).filter(Boolean);
-      if(ds.length)found.push({start:ds[0],end:ds[1]&&ds[1]>=ds[0]?ds[1]:null})});
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    const sep=lines[0]&&lines[0].includes(";")&&!lines[0].includes(",")?";":",";
+    const head=(lines[0]||"").toLowerCase().split(sep).map(h=>h.replace(/["']/g,"").trim());
+    const dc=head.findIndex(h=>/date|day/.test(h));const pc=head.findIndex(h=>/period|menstru|flow|bleed/.test(h));
+    const sc=head.findIndex(h=>/start/.test(h));const ec=head.findIndex(h=>/end/.test(h));
+    if(dc>=0&&pc>=0&&pc!==dc){
+      lines.slice(1).forEach(l=>{const c=l.split(sep).map(x=>x.replace(/["']/g,"").trim());const v=(c[pc]||"").toLowerCase();
+        const d=toDate(c[dc]||"");if(d&&v&&!/^(0|false|no|none|null|nan)$/.test(v)&&!/spot/.test(v))days.push(d)});
+    }else if(sc>=0){
+      lines.slice(1).forEach(l=>{const c=l.split(sep).map(x=>x.replace(/["']/g,"").trim());const s=toDate(c[sc]||"");const e=ec>=0?toDate(c[ec]||""):null;
+        if(s)found.push({start:s,end:e&&e>=s?e:null})});
+    }else{
+      lines.forEach(line=>{const ds=(line.match(/\d{4}-\d{2}-\d{2}|\d{1,2}[\/.]\d{1,2}[\/.]\d{4}/g)||[]).map(toDate).filter(Boolean);
+        if(ds.length)found.push({start:ds[0],end:ds[1]&&ds[1]>=ds[0]?ds[1]:null})});
+    }
   }
+  return finishParse(found,days);
+}
+function finishParse(found,days){
   if(days.length){const u=[...new Set(days)].sort();let cur=null;
     for(const d of u){if(cur&&diff(d,cur.end)<=1)cur.end=d;else{cur={start:d,end:d};found.push(cur)}}}
   const t=todayISO();
   return mergePeriods([],found.filter(p=>p.start<=t&&p.start>"1990"));
 }
-function readFile(file,cb){
-  if(!file)return;if(file.size>15e6){cb(null,"That file is too large. Try the export file on its own.");return}
-  const r=new FileReader();r.onload=()=>{const ps=parseExport(String(r.result));cb(ps,ps.length?null:"We couldn't find any period dates in that file. Check it's the export from your cycle app, or add dates by hand.")};
-  r.onerror=()=>cb(null,"That file couldn't be read. Try choosing it again.");r.readAsText(file);
+function appleLines(lines,days){
+  for(const l of lines){if(l.indexOf("MenstrualFlow")<0||/MenstrualFlowNone/.test(l))continue;
+    const m=l.match(/startDate="(\d{4}-\d{2}-\d{2})/);if(m)days.push(m[1])}
+}
+async function scanXmlFile(file){
+  const days=[];const reader=file.stream().getReader();const dec=new TextDecoder();let tail="";
+  for(;;){const {done,value}=await reader.read();if(done)break;
+    const chunk=tail+dec.decode(value,{stream:true});const parts=chunk.split("\n");tail=parts.pop();appleLines(parts,days)}
+  appleLines([tail],days);return finishParse([],days);
+}
+let zipLib=null;
+function loadZip(){
+  if(window.JSZip)return Promise.resolve(window.JSZip);
+  if(zipLib)return zipLib;
+  zipLib=new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";s.onload=()=>res(window.JSZip);s.onerror=()=>{zipLib=null;rej(new Error("load"))};document.head.appendChild(s)});
+  return zipLib;
+}
+const NO_DATES="We couldn't find any period dates in that file. Check it's the export from your cycle app, or add dates by hand.";
+async function readFile(file,cb){
+  if(!file)return;
+  try{
+    const name=(file.name||"").toLowerCase();
+    if(name.endsWith(".zip")){
+      if(file.size>500e6){cb(null,"That zip is very large. Unzip it and upload the file with your cycle data instead.");return}
+      let JSZip;try{JSZip=await loadZip()}catch(e){cb(null,"Zip files can't be opened here right now. Unzip it on your phone or computer and upload the file inside.");return}
+      let zip;try{zip=await JSZip.loadAsync(file)}catch(e){cb(null,/encrypt/i.test(String(e&&e.message))?"This zip is password-protected. Unzip it with the password your app gave you, then upload the file inside.":"That zip couldn't be opened. Try unzipping it and uploading the file inside.");return}
+      let all=[];
+      for(const f of Object.values(zip.files)){
+        if(f.dir||/__MACOSX|\/\._/.test(f.name)||!/\.(json|csv|xml|txt)$/i.test(f.name))continue;
+        if(/\.xml$/i.test(f.name)&&!/export\.xml$/i.test(f.name))continue;
+        const txt=await f.async("string");all=mergePeriods(all,parseExport(txt));
+      }
+      cb(all,all.length?null:NO_DATES);return;
+    }
+    if(name.endsWith(".xml")){const ps=await scanXmlFile(file);cb(ps,ps.length?null:NO_DATES);return}
+    if(file.size>60e6){cb(null,"That file is too large. Try the export file with your cycle data on its own.");return}
+    const ps=parseExport(await file.text());cb(ps,ps.length?null:NO_DATES);
+  }catch(e){cb(null,"That file couldn't be read. Try choosing it again.")}
 }
 
 /* ---------- log sheet ---------- */
@@ -638,9 +729,9 @@ function renderSheet(){
     <div class="stack"><span class="label">Last night's sleep</span><div class="seg">${[["bad","Badly"],["ok","OK"],["good","Well"]].map(x=>`<button class="chip" data-sleep="${x[0]}" aria-pressed="${lg.sleep===x[0]}">${x[1]}</button>`).join("")}</div></div>
     <button class="btn block" data-act="close">Done</button>`;
   }else if(ui.sheet==="import"){
-    inner=`<h2 id="sheet-h">Import your history</h2><p class="small muted">Upload the export from Flo or another tracker (JSON or CSV). We'll add any periods we find to what's already here.</p>
-    <label class="btn" style="align-self:flex-start">Choose file<input type="file" id="sheet-file" accept=".json,.csv,.txt,application/json,text/csv" hidden></label>
-    ${ui.importMsg?`<p class="small" role="status">${esc(ui.importMsg)}</p>`:""}<button class="btn ghost block" data-act="close">Close</button>`;
+    inner=`<h2 id="sheet-h">Import your history</h2><p class="small muted">We'll add any periods we find to what's already here.</p>
+    ${trackerBlock("sheet",ui.tracker||S.tracker||"",ui.importMsg)}
+    <button class="btn ghost block" data-act="close">Close</button>`;
   }else if(ui.sheet==="diet"){
     inner=`<h2 id="sheet-h">Food needs</h2><div class="stack"><span class="label">Allergies</span><div class="row">${ALLERGIES.map(x=>`<button class="chip" data-sal="${x[0]}" aria-pressed="${(S.allergies||[]).includes(x[0])}">${x[1]}</button>`).join("")}</div>
     <label class="small muted" for="soa">Anything else</label><input type="text" id="soa" value="${esc(S.otherAllergy||"")}" placeholder="Kiwi"></div>
@@ -687,7 +778,7 @@ document.addEventListener("click",e=>{
   switch(ds.act){
     case "start":startOnboarding();scrollTo(0,0);break;
     case "log":if(S.sample){startOnboarding();return}ui.otherDate=false;openSheet("log");break;
-    case "import":if(!ensureReal())return;ui.importMsg="";openSheet("import");break;
+    case "import":if(!ensureReal())return;ui.importMsg="";ui.tracker=S.tracker||"";openSheet("import");break;
     case "edit-diet":if(!ensureReal())return;openSheet("diet");break;
     case "diet-save":{const o=document.getElementById("soa");S.otherAllergy=o?o.value.trim().slice(0,80):"";save();closeSheet();render();toast("Food needs saved");break}
     case "close":closeSheet();render();break;
@@ -707,8 +798,10 @@ document.addEventListener("click",e=>{
 });
 function confirmLeaveSample(){startOnboarding();return false}
 document.addEventListener("change",e=>{
+  if(e.target.id==="ob-tracker"){obReadManual();ui.ob.tracker=e.target.value;ui.ob.importMsg="";render();const el=document.getElementById("ob-tracker");if(el)el.focus();return}
+  if(e.target.id==="sheet-tracker"){ui.tracker=e.target.value;ui.importMsg="";if(!S.sample){S.tracker=e.target.value;save()}renderSheet();const el=document.getElementById("sheet-tracker");if(el)el.focus();return}
   if(e.target.id==="ob-file"){readFile(e.target.files[0],(ps,err)=>{const o=ui.ob;obReadManual();
-    if(ps&&ps.length){o.data.periods=mergePeriods(o.data.periods,ps);o.data.source="Imported file";o.importMsg=`Found ${ps.length} period${ps.length===1?"":"s"}, from ${fmt(ps[0].start,{month:"short",year:"numeric"})} to ${fmt(ps[ps.length-1].start,{month:"short",year:"numeric"})}.`}
+    if(ps&&ps.length){o.data.periods=mergePeriods(o.data.periods,ps);o.data.source=(TRACKERS.find(x=>x.k===o.tracker)||{n:"Imported file"}).n;o.importMsg=`Found ${ps.length} period${ps.length===1?"":"s"}, from ${fmt(ps[0].start,{month:"short",year:"numeric"})} to ${fmt(ps[ps.length-1].start,{month:"short",year:"numeric"})}.`}
     else o.importMsg=err;render()})}
   if(e.target.id==="sheet-file"){readFile(e.target.files[0],(ps,err)=>{
     if(ps&&ps.length){const before=(S.periods||[]).length;S.periods=mergePeriods(S.periods,ps);save();ui.importMsg=`Added ${S.periods.length-before} new period${S.periods.length-before===1?"":"s"}. Predictions updated.`;render()}
