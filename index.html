@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Food for every phase of your cycle, and for perimenopause too.">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}*{box-sizing:border-box}</style>
+<meta name="theme-color" content="#F6F1E8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cycle Kitchen">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;-webkit-text-size-adjust:100%}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <title>Cycle Kitchen</title>
@@ -55,16 +60,17 @@ p{margin:0}
 .card.soft{background:var(--surface2)}
 .card.hi{background:var(--hi);color:var(--on-hi)}
 .card.hi .label,.card.hi .muted{color:var(--on-hi);opacity:.85}
-button,input,select{font:inherit;color:inherit}
+button,input,select{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .btn{appearance:none;border:0;border-radius:999px;padding:12px 20px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer;text-align:center}
 .btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
-.btn.small{padding:8px 14px;font-size:.875rem}
+.btn.small{padding:8px 16px;font-size:.9rem;min-height:44px}
+.btn{min-height:48px;display:inline-flex;align-items:center;justify-content:center}
 .btn.block{width:100%}
 .btn:focus-visible,.chip:focus-visible,.tab:focus-visible,.food summary:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.chip{appearance:none;border:0;border-radius:999px;padding:8px 14px;background:var(--surface2);color:var(--fg);font-size:.9rem;cursor:pointer}
+.chip{appearance:none;border:0;border-radius:999px;padding:8px 16px;min-height:44px;background:var(--surface2);color:var(--fg);font-size:.9rem;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
-.link{appearance:none;background:none;border:0;padding:0;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-weight:500}
-input[type=date],input[type=text],input[type=number]{background:var(--surface2);border:0;border-radius:12px;padding:10px 12px;width:100%;min-width:0}
+.link{appearance:none;background:none;border:0;padding:0;min-height:44px;display:inline-flex;align-items:center;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-weight:500}
+input[type=date],input[type=text],input[type=number]{background:var(--surface2);border:0;border-radius:12px;padding:10px 12px;width:100%;min-width:0;min-height:48px;font-size:16px}
 
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
 .brand{font-family:var(--display);font-size:1.15rem}
@@ -103,7 +109,7 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .tab.log span.dot{width:44px;height:44px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:1.6rem;line-height:1;margin-top:-18px}
 
 .sheet-wrap{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--bg);width:100%;max-width:480px;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--bg);width:100%;max-width:480px;max-height:88vh;max-height:88dvh;overscroll-behavior:contain;overflow:auto;border-radius:22px 22px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg .chip{border-radius:12px;padding:10px 4px}
@@ -347,7 +353,7 @@ function waysFor(f){return f.w.map(w=>Array.isArray(w)?w:[w,[]]).filter(w=>!bloc
 const app=document.getElementById("app");
 const tabsEl=document.getElementById("tabs");
 const overlay=document.getElementById("overlay");
-function setPhase(p){document.documentElement.setAttribute("data-phase",p||"")}
+function setPhase(p){document.documentElement.setAttribute("data-phase",p||"");requestAnimationFrame(()=>{try{let m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m)}m.content=getComputedStyle(document.body).backgroundColor}catch(e){}})}
 function toast(msg){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
 const ICON={
