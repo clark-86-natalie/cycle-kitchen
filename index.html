@@ -531,7 +531,6 @@ function viewToday(){
     ${symCard}
     <section class="card" aria-labelledby="eat-h">
       <h2 id="eat-h">${syms.length?"Also good this phase":"Eat this phase"}</h2>
-      <p class="hint"><span class="hint-dot" aria-hidden="true">${PLUS}</span>Tap a food for quick meal ideas and recipes</p>
       ${foodSection(a.phase)}
     </section>
     ${seedFree()?"":`<button class="card article-card" data-act="article"><span class="art-wrap">${seedArt()}</span><span class="body stack" style="gap:6px"><span class="label">Read · 3 min</span><span class="h3">Seed cycling, explained</span><span class="small muted">What it is, how it's meant to work, and what the research says so far.</span><span class="small" style="font-weight:600">Read the article ›</span></span></button>`}
