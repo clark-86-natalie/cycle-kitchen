@@ -99,6 +99,28 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .food ul li+li{margin-top:4px}
 .tag{display:inline-block;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);margin-left:6px;vertical-align:2px}
 
+.grp{padding:16px 0;border-top:1px solid var(--line)}
+.grp:first-of-type{border-top:0}
+.grp .why{font-size:.92rem;color:var(--muted);margin:4px 0 12px}
+.fchips{display:flex;flex-wrap:wrap;gap:8px}
+.fchip{appearance:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px 8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface2);color:var(--fg);font-weight:500;cursor:pointer;text-align:left}
+.fchip svg{width:16px;height:16px;flex:none;transition:transform .2s ease}
+.fchip[aria-expanded="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.fchip[aria-expanded="true"] svg{transform:rotate(45deg)}
+.fchip:focus-visible,.recipe-row:focus-visible,.article-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fdetail{background:var(--surface2);border-radius:14px;padding:14px;margin-top:12px}
+.recipe-row{appearance:none;border:0;width:100%;display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--surface);color:var(--fg);border-radius:12px;padding:12px 14px;min-height:52px;cursor:pointer;text-align:left;font:inherit}
+.hint{display:flex;gap:8px;align-items:center;font-size:.875rem;color:var(--muted);margin:6px 0 2px}
+.hint-dot{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.hint-dot svg{width:12px;height:12px}
+.next .pill{background:color-mix(in srgb,var(--on-hi) 16%,transparent);border-radius:999px;padding:4px 10px;font-size:.85rem}
+.article-card{padding:0;overflow:hidden;appearance:none;border:0;width:100%;text-align:left;color:inherit;cursor:pointer;display:block;font:inherit}
+.article-card .art{display:block;width:100%;height:auto}
+.article-card .body{display:flex;padding:16px}
+.h3{font-family:var(--display);font-size:1.25rem;line-height:1.2}
+.article p{max-width:65ch}
+.article .lede{font-size:1.1rem}
+.article h2{font-size:1.3rem}
 .next{display:flex;flex-wrap:wrap;gap:6px}
 .next span{background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.85rem}
 
@@ -178,79 +200,121 @@ const PHASES={
 };
 const ORDER=["menstrual","follicular","ovulation","luteal"];
 
-/* tags: allergens (nuts, peanuts, seeds, dairy, gluten, egg, soy, fish, shellfish) + diet (meat, fish, dairy, egg) */
-const W={
-  seedsA:["Stirred into Greek yoghurt with fruit",["dairy"]],
-  seedsB:"Blended into a smoothie",
-  seedsC:"Sprinkled on soup, salad or roasted veg",
-  seedsD:["Baked into oat bites with banana",["gluten"]],
-};
-const FOODS={
+/* Food groups per phase: each group says what it helps and why, then the foods. Tags: allergens + meat/fish/dairy/egg. */
+const R=(title,time,serves,t,ing,steps)=>({title,time,serves,t,ing,steps});
+const GROUPS={
   menstrual:[
-    {n:"Lentils",why:"Iron and fibre to replace what you lose",t:[],w:["Red lentil dhal","Added to soups and stews","Lentil and sweet potato curry"]},
-    {n:"Red meat",why:"The most absorbable iron",t:["meat"],w:["Slow-cooked beef stew","Lean mince in a ragu","Steak with greens"]},
-    {n:"Spinach and dark greens",why:"Iron, folate and magnesium",t:[],w:["Wilted into eggs or pasta",["Blended into a smoothie"],"Sautéed with garlic"]},
-    {n:"Ginger",why:"Can ease cramps and nausea",t:[],w:["Fresh ginger tea","Grated into stir-fries","Added to soups"]},
-    {n:"Salmon or mackerel",why:"Omega-3s to calm inflammation",t:["fish"],w:["Baked with lemon","Smoked on toast",["Mackerel pâté on oatcakes",["gluten"]]]},
-    {n:"Dark chocolate (70%+)",why:"Magnesium for cramps and mood",t:[],w:["A couple of squares after dinner","Melted over berries"]},
-    {n:"Almonds",why:"Magnesium and vitamin E",t:["nuts"],w:["A handful as a snack","Almond butter on toast"]},
-    {n:"Flaxseed",why:"Seed cycling: lignans and omega-3s",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,W.seedsD]},
-    {n:"Pumpkin seeds",why:"Seed cycling: zinc and magnesium",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
-    {n:"Chickpeas",why:"Seed-free swap: fibre and gentle phytoestrogens",t:[],swap:1,w:["Hummus with veg","Roasted with spices","In a warm salad"]},
-    {n:"Oysters, beef or lentils for zinc",why:"Seed-free swap for pumpkin seeds",t:[],swap:1,w:["Lentil soup","Beef stir-fry"]}
+    {title:"Top up your iron",why:"You lose iron when you bleed. Topping it up helps fight the tiredness that often comes with your period.",foods:[
+      {n:"Lentils",why:"Iron, protein and fibre",t:[],w:["Red lentil dhal","Stirred into soups and stews","Lentil and sweet potato curry"],
+        r:R("Red lentil and spinach dhal","30 min",4,[],["250g red lentils","1 onion, chopped","3 garlic cloves, crushed","Thumb of ginger, grated","1 tbsp curry powder","400ml tin coconut milk","2 big handfuls of spinach"],["Soften the onion in a little oil for 5 minutes, then stir in the garlic, ginger and curry powder for 1 minute.","Add the lentils, coconut milk and 500ml water. Simmer for 20 minutes, stirring now and then, until soft.","Stir in the spinach until it wilts, season, and serve with rice or flatbread."])},
+      {n:"Red meat",why:"The iron your body absorbs most easily",t:["meat"],w:["Beef stew","Lean mince in a ragu","Steak with greens"],
+        r:R("Beef and bean chilli","45 min",4,["meat"],["500g lean beef mince","1 onion, chopped","2 garlic cloves","1 tbsp chilli powder","1 tsp ground cumin","400g tin chopped tomatoes","400g tin kidney beans, drained"],["Brown the mince in a large pan, then add the onion and cook for 5 minutes.","Stir in the garlic and spices for 1 minute, then add the tomatoes and beans.","Simmer for 30 minutes until thick. Serve with rice, jacket potatoes or wraps."])},
+      {n:"Spinach and dark greens",why:"Iron, folate and magnesium",t:[],w:["Wilted into eggs or pasta","Blended into a smoothie","Sautéed with garlic"]}
+    ]},
+    {title:"Ease cramps",why:"Magnesium helps muscles relax, while ginger and omega-3s calm the inflammation behind period pain.",foods:[
+      {n:"Ginger",why:"Can ease cramps and nausea",t:[],w:["Fresh ginger tea","Grated into stir-fries","Added to soups"]},
+      {n:"Salmon or mackerel",why:"Omega-3s to calm inflammation",t:["fish"],w:["Baked with lemon","Smoked salmon on toast","Mackerel salad"],
+        r:R("Ginger and lime salmon traybake","25 min",2,["fish"],["2 salmon fillets","1 head of broccoli, in florets","Thumb of ginger, grated","1 lime","1 tbsp honey","1 tbsp olive oil"],["Heat the oven to 200°C (180°C fan). Toss the broccoli in the oil on a tray and roast for 8 minutes.","Mix the ginger, honey, lime zest and juice. Add the salmon to the tray and spoon the mix over.","Roast for 12 to 15 minutes until the salmon flakes easily."])},
+      {n:"Dark chocolate (70%+)",why:"Magnesium for cramps and mood",t:[],w:["A couple of squares after dinner","Melted over berries"]},
+      {n:"Almonds",why:"Magnesium and vitamin E",t:["nuts"],w:["A handful as a snack","Almond butter on toast"]}
+    ]},
+    {title:"Support your hormones",seeds:1,why:"Flaxseed contains plant compounds that help your body keep oestrogen in balance, and pumpkin seeds are rich in zinc, which supports healthy ovulation later in your cycle.",
+      swapWhy:"Chickpeas give you gentle plant oestrogens, and zinc from lentils or beef supports healthy ovulation later in your cycle.",foods:[
+      {n:"Ground flaxseed",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:[["Stirred into Greek yoghurt with fruit",["dairy"]],"Blended into a smoothie","Mixed into porridge"],
+        r:R("Flax and berry overnight oats","5 min, plus overnight",1,["seeds","gluten","dairy"],["40g oats","1 tbsp ground flaxseed","1 tbsp pumpkin seeds","100g Greek yoghurt","100ml milk","A handful of berries"],["Mix the oats, flaxseed, yoghurt and milk in a jar.","Cover and leave in the fridge overnight.","Top with berries and pumpkin seeds in the morning."])},
+      {n:"Pumpkin seeds",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:["Toasted as a snack","Sprinkled on soup or salad","Blended into a smoothie"]},
+      {n:"Chickpeas",why:"Gentle plant oestrogens and fibre",t:[],swap:1,w:["Hummus with veg","Roasted with spices","In a warm salad"]},
+      {n:"Lentils or beef",why:"Zinc",t:[],swap:1,w:["Lentil soup","Beef stir-fry"]}
+    ]}
   ],
   follicular:[
-    {n:"Broccoli and cruciferous veg",why:"Help your body process oestrogen",t:[],w:["Roasted with olive oil","Stir-fried with garlic","Blitzed into soup"]},
-    {n:"Eggs",why:"Protein and choline for steady energy",t:["egg"],w:["Veggie omelette","Boiled as a snack","Shakshuka"]},
-    {n:"Fermented foods",why:"Gut health supports oestrogen balance",t:[],w:["Sauerkraut on the side","Kimchi in rice bowls",["Kefir in a smoothie",["dairy"]]]},
-    {n:"Oats",why:"Slow-release energy and fibre",t:["gluten"],w:["Overnight oats","Porridge with berries"]},
-    {n:"Avocado",why:"Healthy fats your body builds hormones from",t:[],w:["On toast","In salads and bowls"]},
-    {n:"Chicken",why:"Lean protein for training",t:["meat"],w:["Traybake with veg","In wraps"]},
-    {n:"Flaxseed",why:"Seed cycling: lignans and omega-3s",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,W.seedsD]},
-    {n:"Pumpkin seeds",why:"Seed cycling: zinc for follicle health",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
-    {n:"Edamame or tofu",why:"Seed-free swap: plant protein and phytoestrogens",t:["soy"],swap:1,w:["Steamed edamame","Tofu stir-fry"]},
-    {n:"Chickpeas",why:"Seed-free swap: fibre and zinc",t:[],swap:1,w:["Hummus","Roasted chickpeas"]}
+    {title:"Keep oestrogen balanced",why:"Oestrogen is rising. Cruciferous veg and fibre help your liver and gut process it, so levels stay balanced.",foods:[
+      {n:"Broccoli and cruciferous veg",why:"Help your body process oestrogen",t:[],w:["Roasted with olive oil","Stir-fried with garlic","Blitzed into soup"],
+        r:R("Garlic broccoli and chickpea traybake","30 min",2,[],["1 head of broccoli, in florets","400g tin chickpeas, drained","1 red onion, in wedges","2 garlic cloves, sliced","2 tbsp olive oil","1 tsp smoked paprika","1 lemon"],["Heat the oven to 200°C (180°C fan).","Toss everything except the lemon on a tray with salt and pepper.","Roast for 25 minutes, then squeeze over the lemon. Good with rice or flatbread."])},
+      {n:"Fermented foods",why:"A healthy gut helps clear used oestrogen",t:[],w:["Sauerkraut on the side","Kimchi in rice bowls",["Kefir in a smoothie",["dairy"]]]},
+      {n:"Oats",why:"Fibre and slow-release energy",t:["gluten"],w:["Overnight oats","Porridge with berries"]}
+    ]},
+    {title:"Fuel your rising energy",why:"Energy is building. Protein and healthy fats keep you full and help your muscles make the most of training.",foods:[
+      {n:"Eggs",why:"Protein and choline",t:["egg"],w:["Veggie omelette","Boiled as a snack","Shakshuka"],
+        r:R("Veggie shakshuka","25 min",2,["egg"],["1 onion, sliced","1 red pepper, sliced","2 garlic cloves","1 tsp cumin and 1 tsp paprika","400g tin chopped tomatoes","4 eggs","A handful of spinach"],["Soften the onion and pepper in oil for 8 minutes, then add the garlic and spices for 1 minute.","Pour in the tomatoes and simmer for 5 minutes. Stir in the spinach.","Make 4 hollows, crack in the eggs, cover and cook for 6 to 8 minutes until set to your liking."])},
+      {n:"Chicken",why:"Lean protein",t:["meat"],w:["Traybake with veg","In wraps","Chicken salad"]},
+      {n:"Avocado",why:"Healthy fats your body builds hormones from",t:[],w:["On toast","In salads and bowls"]}
+    ]},
+    {title:"Support your hormones",seeds:1,why:"Flaxseed contains plant compounds that help keep rising oestrogen in balance, and the zinc in pumpkin seeds supports the build-up to ovulation.",
+      swapWhy:"Soy and chickpeas give you gentle plant oestrogens and zinc to support the build-up to ovulation.",foods:[
+      {n:"Ground flaxseed",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:[["Stirred into Greek yoghurt with fruit",["dairy"]],"Blended into a smoothie","Mixed into porridge"]},
+      {n:"Pumpkin seeds",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:["Toasted as a snack","Sprinkled on soup or salad"],
+        r:R("Toasted seed sprinkle","10 min",7,["seeds"],["7 tbsp pumpkin seeds","7 tbsp ground flaxseed","Pinch of sea salt","Pinch of chilli flakes (optional)"],["Toast the pumpkin seeds in a dry pan for 3 to 4 minutes, shaking often, until they start to pop.","Let them cool, then mix with the flaxseed, salt and chilli.","Keep in a jar in the fridge and add 2 tablespoons a day to yoghurt, porridge, soup or salad."])},
+      {n:"Edamame or tofu",why:"Plant protein and gentle plant oestrogens",t:["soy"],swap:1,w:["Steamed edamame","Tofu stir-fry"]},
+      {n:"Chickpeas",why:"Fibre and zinc",t:[],swap:1,w:["Hummus","Roasted chickpeas"]}
+    ]}
   ],
   ovulation:[
-    {n:"Berries",why:"Antioxidants and fibre",t:[],w:["On porridge or yoghurt","By the handful","Blended into a smoothie"]},
-    {n:"Salmon",why:"Omega-3s and vitamin D",t:["fish"],w:["Salmon poke bowl","Baked with greens"]},
-    {n:"Peppers and tomatoes",why:"Vitamin C and colour",t:[],w:["Raw with hummus","In a big salad","Roasted in a traybake"]},
-    {n:"Quinoa",why:"Complete plant protein, gluten-free",t:[],w:["Grain bowls","Warm salad with roast veg"]},
-    {n:"Asparagus and leafy salads",why:"Fibre to help clear oestrogen as it peaks",t:[],w:["Griddled asparagus","Big lunchtime salads"]},
-    {n:"Sesame seeds",why:"Seed cycling: lignans for the second half",t:["seeds"],seed:1,w:["Tahini dressing","Sprinkled on stir-fries",W.seedsA,W.seedsB]},
-    {n:"Sunflower seeds",why:"Seed cycling: vitamin E and selenium",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
-    {n:"Oily fish or algae oil",why:"Seed-free swap: omega-3s",t:[],swap:1,w:["Sardines on toast","Mackerel salad"]},
-    {n:"Avocado",why:"Seed-free swap: vitamin E",t:[],swap:1,w:["On toast","In salads"]}
+    {title:"Help clear peak oestrogen",why:"Oestrogen peaks around now. Fibre-rich veg and grains help your body clear what it doesn't need.",foods:[
+      {n:"Quinoa",why:"Fibre and complete plant protein",t:[],w:["Grain bowls","Warm salad with roast veg"],
+        r:R("Rainbow quinoa bowl","25 min",2,[],["150g quinoa","1 red pepper, diced","A handful of cherry tomatoes, halved","½ cucumber, diced","400g tin chickpeas, drained","1 lemon","2 tbsp olive oil","Fresh herbs"],["Cook the quinoa in boiling water for 12 to 15 minutes, then drain and cool a little.","Mix the lemon juice and olive oil with salt and pepper.","Toss everything together and top with herbs."])},
+      {n:"Peppers and tomatoes",why:"Vitamin C and fibre",t:[],w:["Raw with hummus","In a big salad","Roasted in a traybake"]},
+      {n:"Asparagus and leafy salads",why:"Fibre and folate",t:[],w:["Griddled asparagus","Big lunchtime salads"]}
+    ]},
+    {title:"Protect and repair",why:"Antioxidants and omega-3s calm inflammation and help protect your cells while your body is at its busiest.",foods:[
+      {n:"Berries",why:"Antioxidants and fibre",t:[],w:["On porridge or yoghurt","By the handful"],
+        r:R("Berry and spinach smoothie","5 min",1,[],["A big handful of frozen berries","1 banana","A handful of spinach","200ml milk of your choice","1 tbsp sunflower seeds (optional)"],["Blend everything until smooth.","Add a splash more milk if it's too thick."])},
+      {n:"Salmon",why:"Omega-3s and vitamin D",t:["fish"],w:["Salmon poke bowl","Baked with greens"],
+        r:R("Salmon poke bowl","20 min",2,["fish","soy"],["2 salmon fillets","150g rice","½ cucumber, sliced","A handful of edamame","1 avocado, sliced","2 tbsp soy sauce","1 lime"],["Cook the rice. Pan-fry or bake the salmon for 10 to 12 minutes, then flake it.","Mix the soy sauce with the lime juice.","Pile the rice into bowls, top with the salmon and veg, and spoon over the dressing."])}
+    ]},
+    {title:"Support your hormones",seeds:1,why:"Time to switch seeds. Sesame and sunflower seeds give you zinc and vitamin E, which help your body make progesterone after ovulation.",
+      swapWhy:"Oily fish and avocado give you the vitamin E and healthy fats your body uses to make progesterone after ovulation.",foods:[
+      {n:"Sesame seeds",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:["Tahini dressing","Sprinkled on stir-fries","In hummus"],
+        r:R("Lemon tahini dressing","5 min",4,["seeds"],["3 tbsp tahini","Juice of 1 lemon","1 small garlic clove, grated","3 to 4 tbsp water","Pinch of salt"],["Whisk the tahini, lemon and garlic. It will thicken at first.","Add the water a spoonful at a time until it's pourable.","Keeps in the fridge for 5 days. Lovely on salads, grain bowls and roast veg."])},
+      {n:"Sunflower seeds",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:["Toasted as a snack","Sprinkled on salad","Blended into a smoothie"]},
+      {n:"Oily fish",why:"Omega-3s and vitamin D",t:["fish"],swap:1,w:["Sardines on toast","Mackerel salad"]},
+      {n:"Avocado",why:"Vitamin E",t:[],swap:1,w:["On toast","In salads"]}
+    ]}
   ],
   luteal:[
-    {n:"Sweet potato",why:"Complex carbs to steady blood sugar and cravings",t:[],w:["Baked with toppings","Roasted wedges","In a curry"]},
-    {n:"Dark chocolate (70%+)",why:"Magnesium for mood and sleep",t:[],w:["A couple of squares","Melted over banana"]},
-    {n:"Leafy greens",why:"Magnesium and calcium for PMS",t:[],w:["Added to every dinner","Green smoothies"]},
-    {n:"Chickpeas",why:"Fibre and B6",t:[],w:["Hummus","Chickpea curry","Roasted as a snack"]},
-    {n:"Turkey",why:"Tryptophan and B6 for mood",t:["meat"],w:["Turkey meatballs","In a salad"]},
-    {n:"Bananas",why:"B6 and potassium for bloating",t:[],w:[["With sunflower seed butter",["seeds"]],"In a smoothie","Sliced on porridge"]},
-    {n:"Greek yoghurt",why:"Calcium, linked to fewer PMS symptoms",t:["dairy"],w:["With fruit and seeds","As a dip"]},
-    {n:"Walnuts",why:"Omega-3s and magnesium",t:["nuts"],w:["On porridge","In salads"]},
-    {n:"Sesame seeds",why:"Seed cycling: lignans and zinc",t:["seeds"],seed:1,w:["Tahini dressing","Sprinkled on stir-fries",W.seedsA,W.seedsB]},
-    {n:"Sunflower seeds",why:"Seed cycling: vitamin E and selenium",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
-    {n:"Salmon or sardines",why:"Seed-free swap: omega-3s",t:["fish"],swap:1,w:["Baked salmon","Sardines on toast"]},
-    {n:"Beef or lentils",why:"Seed-free swap: zinc",t:[],swap:1,w:["Lentil soup","Beef chilli"]}
+    {title:"A calmer mood",why:"Vitamin B6 and magnesium help your brain make serotonin, which can dip before your period.",foods:[
+      {n:"Turkey",why:"B6 and protein",t:["meat"],w:["Turkey meatballs in tomato sauce","Turkey burgers","In a wrap with salad"],
+        r:R("Turkey and spinach meatballs","25 min",4,["meat"],["500g turkey mince","A handful of spinach, finely chopped","2 garlic cloves, crushed","1 tsp dried oregano","500g passata","Fresh basil"],["Mix the turkey, spinach, half the garlic and the oregano with salt and pepper. Roll into about 16 balls.","Brown them in a little oil for 5 minutes, turning.","Add the passata and remaining garlic, then simmer for 12 to 15 minutes. Tear over basil and serve with pasta or rice."])},
+      {n:"Chickpeas",why:"B6 and fibre",t:[],w:["Hummus","Chickpea curry","Roasted as a snack"],
+        r:R("Chickpea and spinach curry","25 min",4,[],["1 onion, chopped","2 garlic cloves","Thumb of ginger, grated","2 tbsp curry paste","2 x 400g tins chickpeas, drained","400g tin chopped tomatoes","2 handfuls of spinach"],["Soften the onion in oil for 5 minutes, then add the garlic, ginger and curry paste for 1 minute.","Add the chickpeas and tomatoes and simmer for 15 minutes.","Stir in the spinach until wilted. Serve with rice."])},
+      {n:"Dark chocolate (70%+)",why:"Magnesium",t:[],w:["A couple of squares","Melted over banana"]},
+      {n:"Bananas",why:"B6 and potassium",t:[],w:["In a smoothie","Sliced on porridge"]}
+    ]},
+    {title:"Fewer cravings",why:"Slow-release carbs keep your blood sugar steady, so sugar cravings are less likely to hit.",foods:[
+      {n:"Sweet potato",why:"Slow-release carbs and fibre",t:[],w:["Baked with toppings","Roasted wedges","In a curry"],
+        r:R("Black bean stuffed sweet potatoes","50 min",2,[],["2 sweet potatoes","400g tin black beans, drained","1 tsp ground cumin","2 spring onions, sliced","1 avocado","1 lime"],["Bake the sweet potatoes at 200°C (180°C fan) for 40 to 45 minutes until soft.","Warm the beans with the cumin and a splash of water, then lightly mash.","Split the potatoes and fill with the beans, avocado, spring onion and a squeeze of lime."])},
+      {n:"Brown rice",why:"Slow-release carbs",t:[],w:["With curries","In grain bowls"]}
+    ]},
+    {title:"Calm PMS",why:"Calcium and magnesium are linked to fewer PMS symptoms like irritability, cramps and tiredness.",foods:[
+      {n:"Leafy greens",why:"Magnesium and calcium",t:[],w:["Added to every dinner","Green smoothies"]},
+      {n:"Greek yoghurt",why:"Calcium and protein",t:["dairy"],w:["With fruit and seeds","As a dip"]},
+      {n:"Walnuts",why:"Omega-3s and magnesium",t:["nuts"],w:["On porridge","In salads"]}
+    ]},
+    {title:"Support your hormones",seeds:1,why:"Sesame and sunflower seeds give you zinc and vitamin E, which help your body make progesterone in the second half of your cycle.",
+      swapWhy:"Oily fish gives you healthy fats, and zinc from lentils or beef helps your body make progesterone in the second half of your cycle.",foods:[
+      {n:"Sesame seeds",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:["Tahini dressing","Sprinkled on stir-fries"]},
+      {n:"Sunflower seeds",why:"About 1 tablespoon a day",t:["seeds"],seed:1,w:["Toasted as a snack","On salads and soup"],
+        r:R("Sesame and sunflower energy bites","15 min, plus chilling",12,["seeds","gluten"],["100g oats","2 tbsp tahini","2 tbsp honey","2 tbsp sunflower seeds","1 tbsp sesame seeds","30g dark chocolate, chopped"],["Mix everything in a bowl until it sticks together. Add a splash of water if it's dry.","Roll into 12 balls.","Chill for 30 minutes. They keep in the fridge for a week."])},
+      {n:"Salmon or sardines",why:"Omega-3s",t:["fish"],swap:1,w:["Baked salmon","Sardines on toast"]},
+      {n:"Lentils or beef",why:"Zinc",t:[],swap:1,w:["Lentil soup","Beef chilli"]}
+    ]}
   ]
 };
+
 const SYMPTOMS=[
-  {k:"energy",n:"Low energy",f:[["Iron-rich foods like lentils, spinach or red meat",["meat"]],"Protein at breakfast","A short walk outside"]},
-  {k:"mood",n:"Low mood",f:[["Oily fish for omega-3s",["fish"]],"Oats and bananas for steady energy","Dark chocolate in moderation"]},
-  {k:"anxiety",n:"Anxious",f:["Magnesium-rich leafy greens","Cutting back on caffeine today","Chamomile tea"]},
-  {k:"cravings",n:"Cravings",f:["Protein and fat with every meal","Sweet potato or oats for slow energy","Dark chocolate instead of sweets"]},
-  {k:"bloating",n:"Bloating",f:["Ginger, fennel or peppermint tea","Cucumber and water-rich foods","Going easy on salty foods"]},
-  {k:"cramps",n:"Cramps",f:["Ginger tea","Magnesium-rich greens and dark chocolate",["Pumpkin seeds",["seeds"]]]},
-  {k:"skin",n:"Breakouts",f:["Zinc-rich foods like chickpeas or beef","Plenty of water","Less sugar and dairy for a few days"]},
-  {k:"tender",n:"Tender breasts",f:["Less caffeine and salt","Cruciferous veg like broccoli"]},
-  {k:"sleep",n:"Poor sleep",f:["Kiwi or tart cherry in the evening","Magnesium-rich foods at dinner","No caffeine after midday"]},
-  {k:"flush",n:"Hot flushes",peri:1,f:[["Soy foods like tofu or edamame",["soy"]],"Less alcohol, caffeine and spice","Cold water to hand"]},
-  {k:"sweats",n:"Night sweats",peri:1,f:["A cooler bedroom and light bedding","No alcohol close to bedtime",["Phytoestrogens like flax or chickpeas",["seeds"]]]},
-  {k:"fog",n:"Brain fog",peri:1,f:[["Oily fish and eggs",["fish","egg"]],"Berries","Staying hydrated"]},
-  {k:"irregular",n:"Irregular period",peri:1,f:["Protein at every meal","Keep logging; the app adjusts to symptoms"]}
+  {k:"energy",why:"Iron and protein help your body carry oxygen and keep your energy steady.",n:"Low energy",f:[["Iron-rich foods like lentils, spinach or red meat",["meat"]],"Protein at breakfast","A short walk outside"]},
+  {k:"mood",why:"Omega-3s and slow-release carbs support the brain chemicals that lift your mood.",n:"Low mood",f:[["Oily fish for omega-3s",["fish"]],"Oats and bananas for steady energy","Dark chocolate in moderation"]},
+  {k:"anxiety",why:"Magnesium helps calm your nervous system, and caffeine can make jitters worse.",n:"Anxious",f:["Magnesium-rich leafy greens","Cutting back on caffeine today","Chamomile tea"]},
+  {k:"cravings",why:"Protein, fat and slow carbs keep your blood sugar steady, so cravings ease.",n:"Cravings",f:["Protein and fat with every meal","Sweet potato or oats for slow energy","Dark chocolate instead of sweets"]},
+  {k:"bloating",why:"Ginger and fennel calm the gut, and potassium helps your body let go of extra fluid.",n:"Bloating",f:["Ginger, fennel or peppermint tea","Cucumber and water-rich foods","Going easy on salty foods"]},
+  {k:"cramps",why:"Ginger and magnesium help relax the muscles that cause cramping.",n:"Cramps",f:["Ginger tea","Magnesium-rich greens and dark chocolate",["Pumpkin seeds",["seeds"]]]},
+  {k:"skin",why:"Zinc and water support skin repair, and sugar spikes can trigger breakouts.",n:"Breakouts",f:["Zinc-rich foods like chickpeas or beef","Plenty of water","Less sugar and dairy for a few days"]},
+  {k:"tender",why:"Less salt and caffeine can reduce the fluid that makes breasts feel sore.",n:"Tender breasts",f:["Less caffeine and salt","Cruciferous veg like broccoli"]},
+  {k:"sleep",why:"Kiwi, tart cherry and magnesium support your body's natural sleep signals.",n:"Poor sleep",f:["Kiwi or tart cherry in the evening","Magnesium-rich foods at dinner","No caffeine after midday"]},
+  {k:"flush",why:"Plant oestrogens may soften hot flushes, while caffeine, alcohol and spice can trigger them.",n:"Hot flushes",peri:1,f:[["Soy foods like tofu or edamame",["soy"]],"Less alcohol, caffeine and spice","Cold water to hand"]},
+  {k:"sweats",why:"Staying cool and skipping late alcohol helps your body regulate its temperature.",n:"Night sweats",peri:1,f:["A cooler bedroom and light bedding","No alcohol close to bedtime",["Phytoestrogens like flax or chickpeas",["seeds"]]]},
+  {k:"fog",why:"Omega-3s, choline and antioxidants help keep your brain sharp.",n:"Brain fog",peri:1,f:[["Oily fish and eggs",["fish","egg"]],"Berries","Staying hydrated"]},
+  {k:"irregular",why:"Regular protein keeps your energy steady while your cycle shifts.",n:"Irregular period",peri:1,f:["Protein at every meal","Keep logging; the app adjusts to symptoms"]}
 ];
 const ALLERGIES=[["nuts","Nuts"],["peanuts","Peanuts"],["seeds","Seeds or sesame"],["dairy","Dairy"],["gluten","Gluten"],["egg","Eggs"],["soy","Soy"],["fish","Fish"],["shellfish","Shellfish"]];
 const DIETS=[["vegetarian","Vegetarian"],["vegan","Vegan"],["pescatarian","Pescatarian"],["dairyfree","Dairy-free"]];
@@ -379,14 +443,15 @@ function blocked(tags){
   return false;
 }
 const seedFree=()=>(S.allergies||[]).includes("seeds");
-function foodsFor(phase){
-  return FOODS[phase].filter(f=>{
-    if(f.swap&&!seedFree())return false;
-    if(f.seed&&seedFree())return false;
-    return !blocked(f.t);
-  });
+function groupsFor(phase){
+  const sf=seedFree();
+  return GROUPS[phase].map((g,gi)=>({title:g.title,seeds:g.seeds,gi,why:g.seeds&&sf?g.swapWhy:g.why,
+    foods:g.foods.map((f,fi)=>Object.assign({},f,{key:phase+"|"+gi+"|"+fi})).filter(f=>!(f.swap&&!sf)&&!(f.seed&&sf)&&!blocked(f.t))})).filter(g=>g.foods.length);
 }
+function foodsFor(phase){return groupsFor(phase).flatMap(g=>g.foods)}
+function findFood(key){const [p,gi,fi]=String(key).split("|");const g=GROUPS[p]&&GROUPS[p][+gi];return g?g.foods[+fi]:null}
 function waysFor(f){return f.w.map(w=>Array.isArray(w)?w:[w,[]]).filter(w=>!blocked(w[1])).map(w=>w[0])}
+const recipeOk=f=>f&&f.r&&!blocked(f.r.t);
 
 /* ---------- render helpers ---------- */
 const app=document.getElementById("app");
@@ -417,9 +482,26 @@ function strip(a){
   for(let d=1;d<=n;d++){let c=d<=a.periodLen?"m":d<a.ovDay-1?"f":d<=a.ovDay+1?"o":"l";h+=`<span class="${c}${d===a.day?" now":""}" title="Day ${d}"></span>`}
   return `<div class="strip" style="grid-template-columns:repeat(${n},1fr)" role="img" aria-label="Cycle day ${a.day} of about ${a.avg}">${h}</div><div class="legend"><span>Day 1</span><span>Ovulation ~ day ${a.ovDay}</span><span>Day ${a.avg}</span></div>`;
 }
-function foodList(phase){
-  return foodsFor(phase).map(f=>{const ways=waysFor(f);
-    return `<details class="food"><summary><span><span class="nm">${esc(f.n)}</span>${f.seed?'<span class="tag">Seed cycling</span>':""}<br><span class="why">${esc(f.why)}</span></span><span class="more">Ways to eat it</span></summary><ul>${ways.map(w=>`<li>${esc(w)}</li>`).join("")}</ul></details>`}).join("");
+const PLUS='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>';
+function foodSection(phase){
+  return groupsFor(phase).map(g=>{
+    const open=g.foods.find(f=>f.key===ui.food);
+    return `<div class="grp"><h3>${esc(g.title)}</h3><p class="why">${esc(g.why)}</p>
+      <div class="fchips">${g.foods.map(f=>`<button class="fchip" data-food="${f.key}" aria-expanded="${f.key===ui.food}">${esc(f.n)}${PLUS}</button>`).join("")}</div>
+      ${open?`<div class="fdetail stack"><div><b>${esc(open.n)}</b><p class="small muted">${esc(open.why)}</p></div>
+        <div><span class="label">Quick ideas</span><ul class="clean small" style="margin-top:6px">${waysFor(open).map(w=>`<li>${esc(w)}</li>`).join("")}</ul></div>
+        ${recipeOk(open)?`<button class="recipe-row" data-recipe="${open.key}"><span><span class="label" style="display:block">Recipe</span>${esc(open.r.title)}</span><span class="small muted" style="white-space:nowrap">${esc(open.r.time.split(",")[0])} ›</span></button>`:""}
+      </div>`:""}
+      ${g.seeds&&!seedFree()?`<button class="link small" data-act="article">What is seed cycling?</button>`:""}
+    </div>`}).join("");
+}
+function seedArt(){
+  let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  const kinds=[["#5A3A22",5,3,"#3D2615"],["#6E8B3D",9,5,"#9DB867"],["#EFE3C8",4,2.4,"#CDBB94"],["#2E2A28",8,4,"#9A948C"]];
+  let g="";
+  for(let i=0;i<90;i++){const k=kinds[i%4];const x=(rnd()*420-10).toFixed(1),y=(rnd()*170-5).toFixed(1),r=(rnd()*180).toFixed(0);
+    g+=`<ellipse cx="${x}" cy="${y}" rx="${k[1]}" ry="${k[2]}" fill="${k[0]}" stroke="${k[3]}" stroke-width="1" transform="rotate(${r} ${x} ${y})"/>`}
+  return `<svg class="art" viewBox="0 0 400 150" role="img" aria-label="Scattered flax, pumpkin, sesame and sunflower seeds"><rect width="400" height="150" fill="var(--hi)"/>${g}</svg>`;
 }
 
 /* ---------- views ---------- */
@@ -433,7 +515,7 @@ function viewToday(){
   let left;
   if(a.phase==="luteal"&&a.late)left=a.irregular?"Your period could start any day":"Your period is due, it could start any day";
   else left=a.daysLeft<=0?"Last day of this phase":`About ${a.daysLeft} day${a.daysLeft===1?"":"s"} left in this phase`;
-  const symCard=syms.length?`<div class="card hi stack"><span class="label">For today's ${syms.map(s=>s.n.toLowerCase()).join(" and ")}</span><ul class="clean">${[...new Set(syms.flatMap(s=>s.f.map(x=>Array.isArray(x)?x:[x,[]]).filter(x=>!blocked(x[1])).map(x=>x[0])))].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:"";
+  const symCard=syms.length?`<section class="card hi stack" aria-label="For what you logged"><span class="label">Because you logged ${esc(syms.map(s=>s.n.toLowerCase()).join(" and "))}</span>${syms.map(s=>`<div class="stack" style="gap:6px">${syms.length>1?`<b class="small">${esc(s.n)}</b>`:""}<p class="small">${esc(s.why)}</p><div class="next">${s.f.map(x=>Array.isArray(x)?x:[x,[]]).filter(x=>!blocked(x[1])).map(x=>`<span class="pill">${esc(x[0])}</span>`).join("")}</div></div>`).join("")}</section>`:"";
   const notTaken=SUPPS.filter(s=>s.nudge&&!(S.supps||[]).includes(s.k)&&(s.phase.includes(a.phase)||(s.k==="vitd"&&[9,10,11,0,1,2].includes(new Date().getMonth()))));
   const supp=notTaken[0];
   const checkDue=(S.supps||[]).length&&(!S.suppCheck||diff(t,S.suppCheck)>=30);
@@ -448,10 +530,11 @@ function viewToday(){
   <div class="stack-lg" style="margin-top:20px">
     ${symCard}
     <section class="card" aria-labelledby="eat-h">
-      <div class="row" style="justify-content:space-between;margin-bottom:4px"><h2 id="eat-h">Eat this phase</h2></div>
-      <p class="small muted" style="margin-bottom:6px">Tap a food for easy ways to get it in.</p>
-      ${foodList(a.phase)}
+      <h2 id="eat-h">${syms.length?"Also good this phase":"Eat this phase"}</h2>
+      <p class="hint"><span class="hint-dot" aria-hidden="true">${PLUS}</span>Tap a food for quick meal ideas and recipes</p>
+      ${foodSection(a.phase)}
     </section>
+    ${seedFree()?"":`<button class="card article-card" data-act="article"><span class="art-wrap">${seedArt()}</span><span class="body stack" style="gap:6px"><span class="label">Read · 3 min</span><span class="h3">Seed cycling, explained</span><span class="small muted">What it is, how it's meant to work, and what the research says so far.</span><span class="small" style="font-weight:600">Read the article ›</span></span></button>`}
     <section class="card soft stack" aria-labelledby="next-h">
       <h3 id="next-h">Coming up next: ${esc(PHASES[nx].name)}</h3>
       <p class="small muted">${a.phase==="luteal"?`Period expected ${a.irregular?`between ${fmt(a.range[0])} and ${fmt(a.range[1])}`:`around ${fmt(a.nextStart)}`}.`:"Worth adding to your next shop:"}</p>
@@ -466,6 +549,30 @@ function viewToday(){
   </div>`;
 }
 
+function viewArticle(){
+  const a=analyse(S);setPhase(a?a.phase:"");
+  return header()+`<article class="stack-lg article">
+  <button class="link small" data-tab="today" style="align-self:flex-start">‹ Back to today</button>
+  <div class="card article-card" style="cursor:default">${seedArt()}</div>
+  <div class="stack"><span class="label">Read · 3 min</span><h1>Seed cycling, explained</h1>
+  <p class="lede">Seed cycling means eating particular seeds in each half of your cycle, to gently support your hormones through food.</p></div>
+  <section class="stack"><h2>How it works</h2>
+  <div class="card soft stack"><b>First half: period to ovulation</b><p>1 tablespoon each of <b>ground flaxseed</b> and <b>pumpkin seeds</b> a day.</p><p class="small muted">Flaxseed is rich in lignans, plant compounds that can gently attach to oestrogen receptors and help keep oestrogen in balance as it rises. Pumpkin seeds are packed with zinc, which supports the build-up to ovulation.</p></div>
+  <div class="card soft stack"><b>Second half: ovulation to period</b><p>1 tablespoon each of <b>sesame seeds</b> and <b>sunflower seeds</b> a day.</p><p class="small muted">Sesame seeds also contain lignans, and are a good source of zinc. Sunflower seeds bring vitamin E and selenium. Together they're thought to support your body as it makes progesterone.</p></div>
+  </section>
+  <section class="stack"><h2>What the research says</h2>
+  <p>Very few studies have tested seed cycling itself, so there isn't strong proof yet that switching seeds at ovulation changes your hormone levels.</p>
+  <p>What is well supported is that these seeds are full of fibre, healthy fats, zinc, magnesium and vitamin E, all of which your body uses to make and balance hormones. Flaxseed in particular has been studied for cycle regularity and menopause symptoms, with some promising results.</p>
+  <p>Many women find the daily habit helps them eat well and feel more in tune with their cycle, and that's a good reason on its own.</p></section>
+  <section class="stack"><h2>Tips</h2><ul class="clean">
+  <li>Grind flaxseed, or buy it ground. Whole flaxseeds pass straight through you.</li>
+  <li>Keep ground seeds in the fridge so they stay fresh.</li>
+  <li>New to lots of fibre? Start with a teaspoon and build up.</li>
+  <li>Cycle Kitchen switches your seeds automatically at your predicted ovulation.</li>
+  <li>Allergic to seeds? Add it to your food needs and we'll swap in foods with the same nutrients.</li></ul></section>
+  <button class="btn" data-tab="today">Back to today</button>
+  </article>`;
+}
 function viewCycle(){
   const a=analyse(S);
   setPhase(a?a.phase:"");
@@ -732,6 +839,13 @@ function renderSheet(){
     inner=`<h2 id="sheet-h">Import your history</h2><p class="small muted">We'll add any periods we find to what's already here.</p>
     ${trackerBlock("sheet",ui.tracker||S.tracker||"",ui.importMsg)}
     <button class="btn ghost block" data-act="close">Close</button>`;
+  }else if(ui.sheet==="recipe"){
+    const f=findFood(ui.recipe);const r=f&&f.r;
+    if(!r){ui.sheet=null;overlay.innerHTML="";return}
+    inner=`<div class="stack" style="gap:6px"><span class="label">Recipe · ${esc(f.n)}</span><h2 id="sheet-h">${esc(r.title)}</h2><p class="small muted">${esc(r.time)} · Serves ${r.serves}</p></div>
+    <div class="stack"><h3>Ingredients</h3><ul class="clean">${r.ing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    <div class="stack"><h3>Method</h3><ol class="clean">${r.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>
+    <button class="btn block" data-act="close">Close</button>`;
   }else if(ui.sheet==="diet"){
     inner=`<h2 id="sheet-h">Food needs</h2><div class="stack"><span class="label">Allergies</span><div class="row">${ALLERGIES.map(x=>`<button class="chip" data-sal="${x[0]}" aria-pressed="${(S.allergies||[]).includes(x[0])}">${x[1]}</button>`).join("")}</div>
     <label class="small muted" for="soa">Anything else</label><input type="text" id="soa" value="${esc(S.otherAllergy||"")}" placeholder="Kiwi"></div>
@@ -752,6 +866,7 @@ function render(){
   else if(ui.tab==="peri")html=viewPeri();
   else if(ui.tab==="supps")html=viewSupps();
   else if(ui.tab==="more")html=viewMore();
+  else if(ui.tab==="article")html=viewArticle();
   else html=viewToday();
   app.innerHTML=html;renderTabs();renderSheet();
 }
@@ -760,9 +875,11 @@ function toggle(arr,k){const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else arr.p
 function ensureReal(){if(S.sample){startOnboarding();return false}return true}
 
 document.addEventListener("click",e=>{
-  const el=e.target.closest("[data-tab],[data-act],[data-ob],[data-pick],[data-al],[data-di],[data-os],[data-sym],[data-sleep],[data-supp],[data-stage],[data-sal],[data-sdi]");
+  const el=e.target.closest("[data-food],[data-recipe],[data-tab],[data-act],[data-ob],[data-pick],[data-al],[data-di],[data-os],[data-sym],[data-sleep],[data-supp],[data-stage],[data-sal],[data-sdi]");
   if(!el)return;const ds=el.dataset;
   if(ds.act==="backdrop"&&e.target!==el)return;
+  if(ds.food){ui.food=ui.food===ds.food?null:ds.food;render();const b=document.querySelector(`[data-food="${ds.food}"]`);if(b)b.focus({preventScroll:true});return}
+  if(ds.recipe){ui.recipe=ds.recipe;openSheet("recipe");return}
   if(ds.tab){closeSheet();go(ds.tab);return}
   if(ds.ob){if(ds.ob==="next")obNext();else if(ds.ob==="back"){obReadManual();ui.ob.step--;render()}else if(ds.ob==="cancel"){ui.ob=null;render()}else if(ds.ob==="addrow"){obReadManual();ui.ob.manual.push("");render()}else if(ds.ob==="finish")finishOnboarding();return}
   if(ds.pick){ui.ob.data.stage=ds.pick;render();return}
@@ -777,6 +894,7 @@ document.addEventListener("click",e=>{
   if(ds.sdi){S.diets=toggle(S.diets||[],ds.sdi);renderSheet();return}
   switch(ds.act){
     case "start":startOnboarding();scrollTo(0,0);break;
+    case "article":go("article");break;
     case "log":if(S.sample){startOnboarding();return}ui.otherDate=false;openSheet("log");break;
     case "import":if(!ensureReal())return;ui.importMsg="";ui.tracker=S.tracker||"";openSheet("import");break;
     case "edit-diet":if(!ensureReal())return;openSheet("diet");break;

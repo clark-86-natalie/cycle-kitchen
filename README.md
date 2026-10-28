@@ -8,7 +8,8 @@ Cycle Kitchen is a prototype web app that tells you what to eat for the phase of
 
 ## Features
 
-- **Today:** current phase and cycle day, foods to focus on (with easy ways to eat each one), a preview of the next phase, "Now's a great time to…", a sleep note, and extra tips for any symptoms logged today.
+- **Today:** current phase and cycle day, then foods for anything you've logged today, followed by the phase's foods grouped by what they help (a calmer mood, fewer cravings, supporting your hormones) with a plain-English reason for each. Tap a food for quick meal ideas and an optional recipe. Also a preview of the next phase, "Now's a great time to…" and a sleep note.
+- **Seed cycling, explained:** a short article on what seed cycling is, how it's meant to work and what the research says.
 - **Cycle history:** pick the tracker you use now (Flo, Clue, Natural Cycles, Apple Health, Samsung Health, Garmin Connect or another app) for step-by-step export instructions and a link to its help page. Upload the export (JSON, CSV, XML or zip), or add period dates by hand, then keep logging in Cycle Kitchen.
 - **Predictions:** next period from a weighted average of recent cycle lengths; ovulation about 14 days before it. Irregular cycles show a date range instead.
 - **Dietary needs:** allergies are hard filters (nuts and seeds are separate); preferences such as vegetarian are soft filters. Seed cycling is swapped for seed-free foods for anyone with a seed allergy.
