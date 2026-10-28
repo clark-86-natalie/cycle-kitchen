@@ -16,7 +16,7 @@ Cycle Kitchen is a prototype web app that tells you what to eat for the phase of
 - **Logging:** one-tap period, symptom and sleep logging.
 - **Perimenopause:** explainer, what helps, and a symptom-led mode for irregular cycles.
 - **Supplements:** grouped by life stage, nudged only for ones you don't already take, with a monthly check-in.
-- **Phase colours:** the whole app changes colour with your cycle phase.
+- **Phase colours and dark mode:** the app's accent colour changes with your cycle phase. Light mode is warm off-white; dark mode is near-black with the phase colour as an accent. It follows your phone's setting, or you can choose in the You tab.
 
 ## Data and privacy
 

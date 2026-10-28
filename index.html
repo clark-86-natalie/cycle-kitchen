@@ -15,40 +15,33 @@
 <title>Cycle Kitchen</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Work+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: one phone-width column; the whole palette swaps with the cycle phase (set on <html data-phase>). Bottom tab bar. */
+/* Layout: one phone-width column. Light = fresh warm off-white with the phase colour in cards and buttons; dark = near-black with the phase colour as a glowing accent. html[data-ck] holds light/dark, html[data-phase] the cycle phase. */
 :root{
-  --bg:#F6F1E8;--surface:#FFFFFF;--surface2:#EFE7DA;--fg:#2C2420;--muted:#6E6157;--line:rgba(44,36,32,.12);
-  --accent:#7A5C3E;--on-accent:#FFFFFF;--hi:#EAD8C2;--on-hi:#3D2A1A;
-  --display:"Young Serif",Georgia,"Times New Roman",serif;
-  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:16px;
+  --bg:#FBF6F1;--surface:#FFFFFF;--fg:#2B1D16;--muted:#6F5E54;--line:rgba(43,29,22,.12);--title:#2B1D16;
+  --surface2:#FBE6DA;--accent:#D9622B;--on-accent:#FFFFFF;--hi:#F6CDB4;--on-hi:#4A1F0B;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Work Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:18px;
 }
-:root[data-phase="menstrual"]{--bg:#1B1726;--surface:#252036;--surface2:#2F2842;--fg:#EDE8F5;--muted:#A9A1BF;--line:rgba(237,232,245,.12);--accent:#9B88D6;--on-accent:#16121F;--hi:#3B3058;--on-hi:#E4DCFA;color-scheme:dark}
-:root[data-phase="follicular"]{--bg:#EEF4E7;--surface:#FFFFFF;--surface2:#DFEAD1;--fg:#25331D;--muted:#566A48;--line:rgba(37,51,29,.13);--accent:#4F7F38;--on-accent:#FFFFFF;--hi:#F6DCE2;--on-hi:#6E2E3C}
-:root[data-phase="ovulation"]{--bg:#FFE25A;--surface:#FFF7CF;--surface2:#FFEB91;--fg:#3A2400;--muted:#6E4A00;--line:rgba(58,36,0,.16);--accent:#E8365C;--on-accent:#FFFFFF;--hi:#FF8A3D;--on-hi:#FFFFFF}
-:root[data-phase="luteal"]{--bg:#3A1C10;--surface:#4C2615;--surface2:#5F311B;--fg:#F8E6D2;--muted:#DDAE72;--line:rgba(248,230,210,.14);--accent:#E0922F;--on-accent:#2A1307;--hi:#8C3A14;--on-hi:#FCE3C4;color-scheme:dark}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--bg:#1D1916;--surface:#28221E;--surface2:#332B25;--fg:#F1E8DF;--muted:#B8A898;--line:rgba(241,232,223,.12);--accent:#D7A877;--on-accent:#24180F;--hi:#4A3726;--on-hi:#F5E2CC;color-scheme:dark}
-  :root:not([data-theme="light"])[data-phase="menstrual"]{--bg:#1B1726;--surface:#252036;--surface2:#2F2842;--fg:#EDE8F5;--muted:#A9A1BF;--line:rgba(237,232,245,.12);--accent:#9B88D6;--on-accent:#16121F;--hi:#3B3058;--on-hi:#E4DCFA}
-  :root:not([data-theme="light"])[data-phase="follicular"]{--bg:#17200F;--surface:#202B17;--surface2:#2A381F;--fg:#E5EFD9;--muted:#A5B893;--line:rgba(229,239,217,.12);--accent:#9CCB7A;--on-accent:#132009;--hi:#4A2731;--on-hi:#F7D6DE}
-  :root:not([data-theme="light"])[data-phase="ovulation"]{--bg:#2B2205;--surface:#3B2F0A;--surface2:#4B3C0D;--fg:#FFF2C4;--muted:#EBCB6E;--line:rgba(255,242,196,.14);--accent:#FF6F8C;--on-accent:#2B0A12;--hi:#C9581C;--on-hi:#FFF0E2}
-  :root:not([data-theme="light"])[data-phase="luteal"]{--bg:#3A1C10;--surface:#4C2615;--surface2:#5F311B;--fg:#F8E6D2;--muted:#DDAE72;--line:rgba(248,230,210,.14);--accent:#E0922F;--on-accent:#2A1307;--hi:#8C3A14;--on-hi:#FCE3C4}
-}
-:root[data-theme="dark"]{--bg:#1D1916;--surface:#28221E;--surface2:#332B25;--fg:#F1E8DF;--muted:#B8A898;--line:rgba(241,232,223,.12);--accent:#D7A877;--on-accent:#24180F;--hi:#4A3726;--on-hi:#F5E2CC;color-scheme:dark}
-:root[data-theme="dark"][data-phase="follicular"]{--bg:#17200F;--surface:#202B17;--surface2:#2A381F;--fg:#E5EFD9;--muted:#A5B893;--line:rgba(229,239,217,.12);--accent:#9CCB7A;--on-accent:#132009;--hi:#4A2731;--on-hi:#F7D6DE}
-:root[data-theme="dark"][data-phase="ovulation"]{--bg:#2B2205;--surface:#3B2F0A;--surface2:#4B3C0D;--fg:#FFF2C4;--muted:#EBCB6E;--line:rgba(255,242,196,.14);--accent:#FF6F8C;--on-accent:#2B0A12;--hi:#C9581C;--on-hi:#FFF0E2}
-:root[data-theme="dark"][data-phase="menstrual"]{--bg:#1B1726;--surface:#252036;--surface2:#2F2842;--fg:#EDE8F5;--muted:#A9A1BF;--line:rgba(237,232,245,.12);--accent:#9B88D6;--on-accent:#16121F;--hi:#3B3058;--on-hi:#E4DCFA}
-:root[data-theme="dark"][data-phase="luteal"]{--bg:#3A1C10;--surface:#4C2615;--surface2:#5F311B;--fg:#F8E6D2;--muted:#DDAE72;--line:rgba(248,230,210,.14);--accent:#E0922F;--on-accent:#2A1307;--hi:#8C3A14;--on-hi:#FCE3C4}
-
+:root[data-phase="menstrual"]{--surface2:#EEE8FA;--accent:#6F52C2;--on-accent:#FFFFFF;--hi:#DCD2F5;--on-hi:#2E2155}
+:root[data-phase="follicular"]{--surface2:#E4F2E7;--accent:#2F7D46;--on-accent:#FFFFFF;--hi:#CBE8D2;--on-hi:#163A21}
+:root[data-phase="ovulation"]{--surface2:#FFF4CF;--accent:#F2B705;--on-accent:#2B1D16;--hi:#FFE27F;--on-hi:#3A2A00}
+:root[data-phase="luteal"]{--surface2:#FBE6DA;--accent:#D9622B;--on-accent:#FFFFFF;--hi:#F6CDB4;--on-hi:#4A1F0B}
+:root[data-ck="dark"]{--bg:#141113;--surface:#1E191B;--fg:#F2E8E4;--muted:#B3A39E;--line:rgba(242,232,228,.12);
+  --surface2:#2A2325;--accent:#E58A4E;--on-accent:#141113;--hi:#3D2416;--on-hi:#FBD9C3;--title:var(--accent);color-scheme:dark}
+:root[data-ck="dark"][data-phase="menstrual"]{--accent:#A98BE0;--hi:#2B2440;--on-hi:#E4DBFA}
+:root[data-ck="dark"][data-phase="follicular"]{--accent:#7FBF8A;--hi:#1C3122;--on-hi:#D7F0DC}
+:root[data-ck="dark"][data-phase="ovulation"]{--accent:#F0C24B;--hi:#382E10;--on-hi:#FCEBB8}
+:root[data-ck="dark"][data-phase="luteal"]{--accent:#E58A4E;--hi:#3D2416;--on-hi:#FBD9C3}
 *,*::before,*::after{box-sizing:border-box}
 html,body{min-height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;transition:background .5s ease,color .5s ease}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .app{max-width:480px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px calc(96px + env(safe-area-inset-bottom,0px))}
-h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;line-height:1.15}
-h1{font-size:2.1rem}h2{font-size:1.35rem}h3{font-size:1.1rem}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;line-height:1.1;letter-spacing:-.01em}
+h1{font-size:2.1rem;letter-spacing:-.025em}h2{font-size:1.35rem}h3{font-size:1.1rem}
 p{margin:0}
 .stack{display:flex;flex-direction:column;gap:12px}
 .stack-lg{display:flex;flex-direction:column;gap:20px}
@@ -57,6 +50,7 @@ p{margin:0}
 .small{font-size:.875rem}
 .label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .card{background:var(--surface);border-radius:var(--r);padding:16px;min-width:0}
+:root[data-ck="dark"] .card:not(.hi):not(.soft){box-shadow:inset 0 0 0 1px var(--line)}
 .card.soft{background:var(--surface2)}
 .card.hi{background:var(--hi);color:var(--on-hi)}
 .card.hi .label,.card.hi .muted{color:var(--on-hi);opacity:.85}
@@ -75,12 +69,12 @@ button,input,select{font:inherit;color:inherit;-webkit-tap-highlight-color:trans
 input[type=date],input[type=text],input[type=number]{background:var(--surface2);border:0;border-radius:12px;padding:10px 12px;width:100%;min-width:0;min-height:48px;font-size:16px}
 
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
-.brand{font-family:var(--display);font-size:1.15rem}
+.brand{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
 .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--surface2)}
 .banner{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--surface2);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;font-size:.9rem}
 
 .hero{padding:8px 0 4px}
-.hero .day{font-family:var(--display);font-size:3.4rem;line-height:1}
+.hero .day{font-family:var(--display);font-weight:800;font-size:3.6rem;line-height:.95;letter-spacing:-.035em;color:var(--title)}
 .strip{display:grid;gap:2px;height:10px;margin-top:14px;border-radius:999px;overflow:hidden}
 .strip span{display:block}
 .strip .m{background:#8C79C9}.strip .f{background:#6FA052}.strip .o{background:#F2B21B}.strip .l{background:#C2652B}
@@ -117,7 +111,7 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .article-card{padding:0;overflow:hidden;appearance:none;border:0;width:100%;text-align:left;color:inherit;cursor:pointer;display:block;font:inherit}
 .article-card .art{display:block;width:100%;height:auto}
 .article-card .body{display:flex;padding:16px}
-.h3{font-family:var(--display);font-size:1.25rem;line-height:1.2}
+.h3{font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.2}
 .article p{max-width:65ch}
 .article .lede{font-size:1.1rem}
 .article h2{font-size:1.3rem}
@@ -457,6 +451,17 @@ const recipeOk=f=>f&&f.r&&!blocked(f.r.t);
 const app=document.getElementById("app");
 const tabsEl=document.getElementById("tabs");
 const overlay=document.getElementById("overlay");
+let modePref="auto";try{modePref=localStorage.getItem("ck-mode")||"auto"}catch(e){}
+function applyMode(){
+  const host=document.documentElement.getAttribute("data-theme");
+  const sys=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark=modePref==="dark"||(modePref==="auto"&&(host==="dark"||(host!=="light"&&sys)));
+  document.documentElement.setAttribute("data-ck",dark?"dark":"light");
+  try{const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=getComputedStyle(document.body).backgroundColor}catch(e){}
+}
+applyMode();
+try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyMode)}catch(e){}
+try{new MutationObserver(applyMode).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]})}catch(e){}
 function setPhase(p){document.documentElement.setAttribute("data-phase",p||"");requestAnimationFrame(()=>{try{let m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m)}m.content=getComputedStyle(document.body).backgroundColor}catch(e){}})}
 function toast(msg){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
@@ -632,6 +637,9 @@ function viewMore(){
   <section class="card stack"><div class="row" style="justify-content:space-between"><span class="label">Food needs</span><button class="link small" data-act="edit-diet">Edit</button></div>
     <p>${al.length?"Avoiding: "+esc(al.join(", ")):"No allergies set"}</p><p class="small muted">${di.length?esc(di.join(", ")):"No dietary preferences set"}</p></section>
   <button class="card stack" data-tab="supps" style="text-align:left;border:0;cursor:pointer;font:inherit;color:inherit"><span class="label">Supplements</span><span>${(S.supps||[]).length?esc((S.supps||[]).map(k=>(SUPPS.find(s=>s.k===k)||{n:k}).n).join(", ")):"None marked"} ›</span></button>
+  <section class="card stack"><span class="label">Appearance</span><div class="row">
+    ${[["auto","Automatic"],["light","Light"],["dark","Dark"]].map(x=>`<button class="chip" data-mode="${x[0]}" aria-pressed="${modePref===x[0]}">${x[1]}</button>`).join("")}</div>
+    <p class="small muted">Automatic follows your phone's setting.</p></section>
   <section class="card stack"><span class="label">Life stage</span><div class="row">
     <button class="chip" data-stage="cycle" aria-pressed="${S.stage!=="peri"}">Cycling as usual</button><button class="chip" data-stage="peri" aria-pressed="${S.stage==="peri"}">Perimenopause</button></div></section>
   <section class="card stack"><span class="label">Your privacy</span>
@@ -874,9 +882,10 @@ function toggle(arr,k){const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else arr.p
 function ensureReal(){if(S.sample){startOnboarding();return false}return true}
 
 document.addEventListener("click",e=>{
-  const el=e.target.closest("[data-food],[data-recipe],[data-tab],[data-act],[data-ob],[data-pick],[data-al],[data-di],[data-os],[data-sym],[data-sleep],[data-supp],[data-stage],[data-sal],[data-sdi]");
+  const el=e.target.closest("[data-mode],[data-food],[data-recipe],[data-tab],[data-act],[data-ob],[data-pick],[data-al],[data-di],[data-os],[data-sym],[data-sleep],[data-supp],[data-stage],[data-sal],[data-sdi]");
   if(!el)return;const ds=el.dataset;
   if(ds.act==="backdrop"&&e.target!==el)return;
+  if(ds.mode){modePref=ds.mode;try{localStorage.setItem("ck-mode",modePref)}catch(e){}applyMode();render();return}
   if(ds.food){ui.food=ui.food===ds.food?null:ds.food;render();const b=document.querySelector(`[data-food="${ds.food}"]`);if(b)b.focus({preventScroll:true});return}
   if(ds.recipe){ui.recipe=ds.recipe;openSheet("recipe");return}
   if(ds.tab){closeSheet();go(ds.tab);return}
