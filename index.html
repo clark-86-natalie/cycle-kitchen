@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Food for every phase of your cycle, and for perimenopause too.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}*{box-sizing:border-box}</style>
+</head>
+<body>
+<title>Cycle Kitchen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: one phone-width column; the whole palette swaps with the cycle phase (set on <html data-phase>). Bottom tab bar. */
+:root{
+  --bg:#F6F1E8;--surface:#FFFFFF;--surface2:#EFE7DA;--fg:#2C2420;--muted:#6E6157;--line:rgba(44,36,32,.12);
+  --accent:#7A5C3E;--on-accent:#FFFFFF;--hi:#EAD8C2;--on-hi:#3D2A1A;
+  --display:"Young Serif",Georgia,"Times New Roman",serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:16px;
+}
+:root[data-phase="menstrual"]{--bg:#1B1726;--surface:#252036;--surface2:#2F2842;--fg:#EDE8F5;--muted:#A9A1BF;--line:rgba(237,232,245,.12);--accent:#9B88D6;--on-accent:#16121F;--hi:#3B3058;--on-hi:#E4DCFA;color-scheme:dark}
+:root[data-phase="follicular"]{--bg:#EEF4E7;--surface:#FFFFFF;--surface2:#DFEAD1;--fg:#25331D;--muted:#566A48;--line:rgba(37,51,29,.13);--accent:#4F7F38;--on-accent:#FFFFFF;--hi:#F6DCE2;--on-hi:#6E2E3C}
+:root[data-phase="ovulation"]{--bg:#FFE25A;--surface:#FFF7CF;--surface2:#FFEB91;--fg:#3A2400;--muted:#6E4A00;--line:rgba(58,36,0,.16);--accent:#E8365C;--on-accent:#FFFFFF;--hi:#FF8A3D;--on-hi:#FFFFFF}
+:root[data-phase="luteal"]{--bg:#3A1C10;--surface:#4C2615;--surface2:#5F311B;--fg:#F8E6D2;--muted:#DDAE72;--line:rgba(248,230,210,.14);--accent:#E0922F;--on-accent:#2A1307;--hi:#8C3A14;--on-hi:#FCE3C4;color-scheme:dark}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#1D1916;--surface:#28221E;--surface2:#332B25;--fg:#F1E8DF;--muted:#B8A898;--line:rgba(241,232,223,.12);--accent:#D7A877;--on-accent:#24180F;--hi:#4A3726;--on-hi:#F5E2CC;color-scheme:dark}
+  :root:not([data-theme="light"])[data-phase="menstrual"]{--bg:#1B1726;--surface:#252036;--surface2:#2F2842;--fg:#EDE8F5;--muted:#A9A1BF;--line:rgba(237,232,245,.12);--accent:#9B88D6;--on-accent:#16121F;--hi:#3B3058;--on-hi:#E4DCFA}
+  :root:not([data-theme="light"])[data-phase="follicular"]{--bg:#17200F;--surface:#202B17;--surface2:#2A381F;--fg:#E5EFD9;--muted:#A5B893;--line:rgba(229,239,217,.12);--accent:#9CCB7A;--on-accent:#132009;--hi:#4A2731;--on-hi:#F7D6DE}
+  :root:not([data-theme="light"])[data-phase="ovulation"]{--bg:#2B2205;--surface:#3B2F0A;--surface2:#4B3C0D;--fg:#FFF2C4;--muted:#EBCB6E;--line:rgba(255,242,196,.14);--accent:#FF6F8C;--on-accent:#2B0A12;--hi:#C9581C;--on-hi:#FFF0E2}
+  :root:not([data-theme="light"])[data-phase="luteal"]{--bg:#3A1C10;--surface:#4C2615;--surface2:#5F311B;--fg:#F8E6D2;--muted:#DDAE72;--line:rgba(248,230,210,.14);--accent:#E0922F;--on-accent:#2A1307;--hi:#8C3A14;--on-hi:#FCE3C4}
+}
+:root[data-theme="dark"]{--bg:#1D1916;--surface:#28221E;--surface2:#332B25;--fg:#F1E8DF;--muted:#B8A898;--line:rgba(241,232,223,.12);--accent:#D7A877;--on-accent:#24180F;--hi:#4A3726;--on-hi:#F5E2CC;color-scheme:dark}
+:root[data-theme="dark"][data-phase="follicular"]{--bg:#17200F;--surface:#202B17;--surface2:#2A381F;--fg:#E5EFD9;--muted:#A5B893;--line:rgba(229,239,217,.12);--accent:#9CCB7A;--on-accent:#132009;--hi:#4A2731;--on-hi:#F7D6DE}
+:root[data-theme="dark"][data-phase="ovulation"]{--bg:#2B2205;--surface:#3B2F0A;--surface2:#4B3C0D;--fg:#FFF2C4;--muted:#EBCB6E;--line:rgba(255,242,196,.14);--accent:#FF6F8C;--on-accent:#2B0A12;--hi:#C9581C;--on-hi:#FFF0E2}
+:root[data-theme="dark"][data-phase="menstrual"]{--bg:#1B1726;--surface:#252036;--surface2:#2F2842;--fg:#EDE8F5;--muted:#A9A1BF;--line:rgba(237,232,245,.12);--accent:#9B88D6;--on-accent:#16121F;--hi:#3B3058;--on-hi:#E4DCFA}
+:root[data-theme="dark"][data-phase="luteal"]{--bg:#3A1C10;--surface:#4C2615;--surface2:#5F311B;--fg:#F8E6D2;--muted:#DDAE72;--line:rgba(248,230,210,.14);--accent:#E0922F;--on-accent:#2A1307;--hi:#8C3A14;--on-hi:#FCE3C4}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;transition:background .5s ease,color .5s ease}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.app{max-width:480px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px calc(96px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:2.1rem}h2{font-size:1.35rem}h3{font-size:1.1rem}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:12px}
+.stack-lg{display:flex;flex-direction:column;gap:20px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.card{background:var(--surface);border-radius:var(--r);padding:16px;min-width:0}
+.card.soft{background:var(--surface2)}
+.card.hi{background:var(--hi);color:var(--on-hi)}
+.card.hi .label,.card.hi .muted{color:var(--on-hi);opacity:.85}
+button,input,select{font:inherit;color:inherit}
+.btn{appearance:none;border:0;border-radius:999px;padding:12px 20px;background:var(--accent);color:var(--on-accent);font-weight:600;cursor:pointer;text-align:center}
+.btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.small{padding:8px 14px;font-size:.875rem}
+.btn.block{width:100%}
+.btn:focus-visible,.chip:focus-visible,.tab:focus-visible,.food summary:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chip{appearance:none;border:0;border-radius:999px;padding:8px 14px;background:var(--surface2);color:var(--fg);font-size:.9rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.link{appearance:none;background:none;border:0;padding:0;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-weight:500}
+input[type=date],input[type=text],input[type=number]{background:var(--surface2);border:0;border-radius:12px;padding:10px 12px;width:100%;min-width:0}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.brand{font-family:var(--display);font-size:1.15rem}
+.avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--surface2)}
+.banner{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--surface2);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;font-size:.9rem}
+
+.hero{padding:8px 0 4px}
+.hero .day{font-family:var(--display);font-size:3.4rem;line-height:1}
+.strip{display:grid;gap:2px;height:10px;margin-top:14px;border-radius:999px;overflow:hidden}
+.strip span{display:block}
+.strip .m{background:#8C79C9}.strip .f{background:#6FA052}.strip .o{background:#F2B21B}.strip .l{background:#C2652B}
+.strip .now{box-shadow:inset 0 0 0 2px var(--fg)}
+.legend{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:6px}
+
+.food{border-top:1px solid var(--line)}
+.food:first-of-type{border-top:0}
+.food summary{list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:12px 0;cursor:pointer}
+.food summary::-webkit-details-marker{display:none}
+.food .nm{font-weight:600}
+.food .why{font-size:.875rem;color:var(--muted)}
+.food .more{font-size:.8rem;white-space:nowrap;color:var(--muted)}
+.food[open] .more{color:var(--fg)}
+.food ul{margin:0 0 12px;padding-left:18px;font-size:.9rem}
+.food ul li+li{margin-top:4px}
+.tag{display:inline-block;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);margin-left:6px;vertical-align:2px}
+
+.next{display:flex;flex-wrap:wrap;gap:6px}
+.next span{background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.85rem}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:8px max(8px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tabs-in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;align-items:center}
+.tab{appearance:none;border:0;background:none;color:var(--muted);font-size:.68rem;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--fg);font-weight:600}
+.tab.log{color:var(--on-accent)}
+.tab.log span.dot{width:44px;height:44px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:1.6rem;line-height:1;margin-top:-18px}
+
+.sheet-wrap{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:480px;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg .chip{border-radius:12px;padding:10px 4px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem}
+
+.steps{display:flex;gap:6px;margin-bottom:6px}
+.steps span{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.steps span.on{background:var(--accent)}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;appearance:none;border:0;background:var(--surface);border-radius:var(--r);padding:14px 16px;cursor:pointer}
+.opt[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--accent)}
+.opt b{display:block;font-weight:600}
+.drop{border:2px dashed var(--line);border-radius:var(--r);padding:18px;text-align:center}
+table.hist{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.9rem}
+table.hist td,table.hist th{padding:8px 0;border-top:1px solid var(--line);text-align:left}
+table.hist th{font-weight:600;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;border-top:0}
+table.hist td:last-child,table.hist th:last-child{text-align:right}
+ul.clean{margin:0;padding-left:18px}
+ul.clean li+li{margin-top:6px}
+.stat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat .card .v{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){body{transition:none}}
+</style>
+
+<div class="app" id="app" aria-live="polite">
+  <div class="top"><span class="brand">Cycle Kitchen</span></div>
+  <p class="muted">Loading your kitchen…</p>
+</div>
+<nav class="tabs" id="tabs" aria-label="Main"></nav>
+<div id="overlay"></div>
+
+<script>
+(function(){
+"use strict";
+const inClaude=!!(window.claude&&window.claude.use);
+
+/* ---------- dates ---------- */
+const DAY=86400000;
+const iso=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
+const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>iso(new Date(parse(s).getTime()+n*DAY+3600000));
+const diff=(a,b)=>Math.round((parse(a)-parse(b))/DAY);
+const todayISO=()=>iso(new Date());
+const fmt=(s,o)=>parse(s).toLocaleDateString("en-GB",o||{day:"numeric",month:"short"});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- content ---------- */
+const PHASES={
+  menstrual:{name:"Menstrual",short:"m",mood:"Rest and replenish",
+    great:"Go easy on yourself. A walk, gentle yoga or a stretch is plenty, and an early night counts as self-care.",
+    sleep:"You might need extra rest right now. Your body is doing a lot, so an earlier bedtime will help.",
+    seeds:"Flax and pumpkin"},
+  follicular:{name:"Follicular",short:"f",mood:"Energy is rising",
+    great:"Energy is building. A good time to try something new, plan the month ahead or step up your training.",
+    sleep:"Sleep usually feels easier in this phase. Keep a steady bedtime to bank good rest.",
+    seeds:"Flax and pumpkin"},
+  ovulation:{name:"Ovulation",short:"o",mood:"Peak energy",
+    great:"Energy's high. A great time for a tough strength session, a big conversation or seeing friends.",
+    sleep:"You may feel you need less sleep, but late nights now can catch up with you next phase.",
+    seeds:"Sesame and sunflower"},
+  luteal:{name:"Luteal",short:"l",mood:"Slowing down",
+    great:"Ease the pace as this phase goes on. Strength work and steady walks suit early luteal; gentler movement later.",
+    sleep:"Finding it harder to sleep? Falling progesterone and a slightly higher body temperature can do that before your period. Magnesium-rich foods and a cooler bedroom can help.",
+    seeds:"Sesame and sunflower"}
+};
+const ORDER=["menstrual","follicular","ovulation","luteal"];
+
+/* tags: allergens (nuts, peanuts, seeds, dairy, gluten, egg, soy, fish, shellfish) + diet (meat, fish, dairy, egg) */
+const W={
+  seedsA:["Stirred into Greek yoghurt with fruit",["dairy"]],
+  seedsB:"Blended into a smoothie",
+  seedsC:"Sprinkled on soup, salad or roasted veg",
+  seedsD:["Baked into oat bites with banana",["gluten"]],
+};
+const FOODS={
+  menstrual:[
+    {n:"Lentils",why:"Iron and fibre to replace what you lose",t:[],w:["Red lentil dhal","Added to soups and stews","Lentil and sweet potato curry"]},
+    {n:"Red meat",why:"The most absorbable iron",t:["meat"],w:["Slow-cooked beef stew","Lean mince in a ragu","Steak with greens"]},
+    {n:"Spinach and dark greens",why:"Iron, folate and magnesium",t:[],w:["Wilted into eggs or pasta",["Blended into a smoothie"],"Sautéed with garlic"]},
+    {n:"Ginger",why:"Can ease cramps and nausea",t:[],w:["Fresh ginger tea","Grated into stir-fries","Added to soups"]},
+    {n:"Salmon or mackerel",why:"Omega-3s to calm inflammation",t:["fish"],w:["Baked with lemon","Smoked on toast",["Mackerel pâté on oatcakes",["gluten"]]]},
+    {n:"Dark chocolate (70%+)",why:"Magnesium for cramps and mood",t:[],w:["A couple of squares after dinner","Melted over berries"]},
+    {n:"Almonds",why:"Magnesium and vitamin E",t:["nuts"],w:["A handful as a snack","Almond butter on toast"]},
+    {n:"Flaxseed",why:"Seed cycling: lignans and omega-3s",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,W.seedsD]},
+    {n:"Pumpkin seeds",why:"Seed cycling: zinc and magnesium",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
+    {n:"Chickpeas",why:"Seed-free swap: fibre and gentle phytoestrogens",t:[],swap:1,w:["Hummus with veg","Roasted with spices","In a warm salad"]},
+    {n:"Oysters, beef or lentils for zinc",why:"Seed-free swap for pumpkin seeds",t:[],swap:1,w:["Lentil soup","Beef stir-fry"]}
+  ],
+  follicular:[
+    {n:"Broccoli and cruciferous veg",why:"Help your body process oestrogen",t:[],w:["Roasted with olive oil","Stir-fried with garlic","Blitzed into soup"]},
+    {n:"Eggs",why:"Protein and choline for steady energy",t:["egg"],w:["Veggie omelette","Boiled as a snack","Shakshuka"]},
+    {n:"Fermented foods",why:"Gut health supports oestrogen balance",t:[],w:["Sauerkraut on the side","Kimchi in rice bowls",["Kefir in a smoothie",["dairy"]]]},
+    {n:"Oats",why:"Slow-release energy and fibre",t:["gluten"],w:["Overnight oats","Porridge with berries"]},
+    {n:"Avocado",why:"Healthy fats your body builds hormones from",t:[],w:["On toast","In salads and bowls"]},
+    {n:"Chicken",why:"Lean protein for training",t:["meat"],w:["Traybake with veg","In wraps"]},
+    {n:"Flaxseed",why:"Seed cycling: lignans and omega-3s",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,W.seedsD]},
+    {n:"Pumpkin seeds",why:"Seed cycling: zinc for follicle health",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
+    {n:"Edamame or tofu",why:"Seed-free swap: plant protein and phytoestrogens",t:["soy"],swap:1,w:["Steamed edamame","Tofu stir-fry"]},
+    {n:"Chickpeas",why:"Seed-free swap: fibre and zinc",t:[],swap:1,w:["Hummus","Roasted chickpeas"]}
+  ],
+  ovulation:[
+    {n:"Berries",why:"Antioxidants and fibre",t:[],w:["On porridge or yoghurt","By the handful","Blended into a smoothie"]},
+    {n:"Salmon",why:"Omega-3s and vitamin D",t:["fish"],w:["Salmon poke bowl","Baked with greens"]},
+    {n:"Peppers and tomatoes",why:"Vitamin C and colour",t:[],w:["Raw with hummus","In a big salad","Roasted in a traybake"]},
+    {n:"Quinoa",why:"Complete plant protein, gluten-free",t:[],w:["Grain bowls","Warm salad with roast veg"]},
+    {n:"Asparagus and leafy salads",why:"Fibre to help clear oestrogen as it peaks",t:[],w:["Griddled asparagus","Big lunchtime salads"]},
+    {n:"Sesame seeds",why:"Seed cycling: lignans for the second half",t:["seeds"],seed:1,w:["Tahini dressing","Sprinkled on stir-fries",W.seedsA,W.seedsB]},
+    {n:"Sunflower seeds",why:"Seed cycling: vitamin E and selenium",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
+    {n:"Oily fish or algae oil",why:"Seed-free swap: omega-3s",t:[],swap:1,w:["Sardines on toast","Mackerel salad"]},
+    {n:"Avocado",why:"Seed-free swap: vitamin E",t:[],swap:1,w:["On toast","In salads"]}
+  ],
+  luteal:[
+    {n:"Sweet potato",why:"Complex carbs to steady blood sugar and cravings",t:[],w:["Baked with toppings","Roasted wedges","In a curry"]},
+    {n:"Dark chocolate (70%+)",why:"Magnesium for mood and sleep",t:[],w:["A couple of squares","Melted over banana"]},
+    {n:"Leafy greens",why:"Magnesium and calcium for PMS",t:[],w:["Added to every dinner","Green smoothies"]},
+    {n:"Chickpeas",why:"Fibre and B6",t:[],w:["Hummus","Chickpea curry","Roasted as a snack"]},
+    {n:"Turkey",why:"Tryptophan and B6 for mood",t:["meat"],w:["Turkey meatballs","In a salad"]},
+    {n:"Bananas",why:"B6 and potassium for bloating",t:[],w:[["With sunflower seed butter",["seeds"]],"In a smoothie","Sliced on porridge"]},
+    {n:"Greek yoghurt",why:"Calcium, linked to fewer PMS symptoms",t:["dairy"],w:["With fruit and seeds","As a dip"]},
+    {n:"Walnuts",why:"Omega-3s and magnesium",t:["nuts"],w:["On porridge","In salads"]},
+    {n:"Sesame seeds",why:"Seed cycling: lignans and zinc",t:["seeds"],seed:1,w:["Tahini dressing","Sprinkled on stir-fries",W.seedsA,W.seedsB]},
+    {n:"Sunflower seeds",why:"Seed cycling: vitamin E and selenium",t:["seeds"],seed:1,w:[W.seedsA,W.seedsB,W.seedsC,"Toasted as a snack"]},
+    {n:"Salmon or sardines",why:"Seed-free swap: omega-3s",t:["fish"],swap:1,w:["Baked salmon","Sardines on toast"]},
+    {n:"Beef or lentils",why:"Seed-free swap: zinc",t:[],swap:1,w:["Lentil soup","Beef chilli"]}
+  ]
+};
+const SYMPTOMS=[
+  {k:"energy",n:"Low energy",f:[["Iron-rich foods like lentils, spinach or red meat",["meat"]],"Protein at breakfast","A short walk outside"]},
+  {k:"mood",n:"Low mood",f:[["Oily fish for omega-3s",["fish"]],"Oats and bananas for steady energy","Dark chocolate in moderation"]},
+  {k:"anxiety",n:"Anxious",f:["Magnesium-rich leafy greens","Cutting back on caffeine today","Chamomile tea"]},
+  {k:"cravings",n:"Cravings",f:["Protein and fat with every meal","Sweet potato or oats for slow energy","Dark chocolate instead of sweets"]},
+  {k:"bloating",n:"Bloating",f:["Ginger, fennel or peppermint tea","Cucumber and water-rich foods","Going easy on salty foods"]},
+  {k:"cramps",n:"Cramps",f:["Ginger tea","Magnesium-rich greens and dark chocolate",["Pumpkin seeds",["seeds"]]]},
+  {k:"skin",n:"Breakouts",f:["Zinc-rich foods like chickpeas or beef","Plenty of water","Less sugar and dairy for a few days"]},
+  {k:"tender",n:"Tender breasts",f:["Less caffeine and salt","Cruciferous veg like broccoli"]},
+  {k:"sleep",n:"Poor sleep",f:["Kiwi or tart cherry in the evening","Magnesium-rich foods at dinner","No caffeine after midday"]},
+  {k:"flush",n:"Hot flushes",peri:1,f:[["Soy foods like tofu or edamame",["soy"]],"Less alcohol, caffeine and spice","Cold water to hand"]},
+  {k:"sweats",n:"Night sweats",peri:1,f:["A cooler bedroom and light bedding","No alcohol close to bedtime",["Phytoestrogens like flax or chickpeas",["seeds"]]]},
+  {k:"fog",n:"Brain fog",peri:1,f:[["Oily fish and eggs",["fish","egg"]],"Berries","Staying hydrated"]},
+  {k:"irregular",n:"Irregular period",peri:1,f:["Protein at every meal","Keep logging; the app adjusts to symptoms"]}
+];
+const ALLERGIES=[["nuts","Nuts"],["peanuts","Peanuts"],["seeds","Seeds or sesame"],["dairy","Dairy"],["gluten","Gluten"],["egg","Eggs"],["soy","Soy"],["fish","Fish"],["shellfish","Shellfish"]];
+const DIETS=[["vegetarian","Vegetarian"],["vegan","Vegan"],["pescatarian","Pescatarian"],["dairyfree","Dairy-free"]];
+const SUPPS=[
+  {k:"magnesium",n:"Magnesium",stage:["cycle","peri"],phase:["luteal","menstrual"],what:"Linked to fewer PMS symptoms, calmer cramps and better sleep.",nudge:"Magnesium can help with sleep and cramps this phase."},
+  {k:"vitd",n:"Vitamin D",stage:["cycle","peri"],phase:[],what:"The NHS suggests a daily dose from October to March in the UK. Supports bones, mood and immunity.",nudge:"It's vitamin D season in the UK, October to March."},
+  {k:"omega3",n:"Omega-3",stage:["cycle","peri"],phase:["menstrual"],what:"Helps calm inflammation, may ease period pain, supports heart and brain health.",nudge:"Omega-3 may ease period pain."},
+  {k:"b6",n:"Vitamin B6",stage:["cycle"],phase:["luteal"],what:"Some evidence it eases PMS mood symptoms.",nudge:"B6 may help with PMS mood swings."},
+  {k:"iron",n:"Iron",stage:["cycle"],phase:[],what:"Only if you have heavy periods or low iron. Too much can cause problems, so check with a pharmacist or GP first.",nudge:null},
+  {k:"calcium",n:"Calcium",stage:["peri"],phase:[],what:"Bone density drops as oestrogen falls. Food first, supplement if you don't get enough.",nudge:null},
+  {k:"zinc",n:"Zinc",stage:["cycle"],phase:["follicular"],what:"Supports skin, immunity and healthy ovulation.",nudge:null}
+];
+const PERI_HELPS=[
+  ["Strength training","Two or three sessions a week protects muscle and bone and helps mood and blood sugar."],
+  ["Protein at every meal","Needs rise as oestrogen dips. Aim for a palm-sized portion each time."],
+  ["Phytoestrogens","Soy, flax and chickpeas gently support falling oestrogen."],
+  ["Calcium, vitamin D and magnesium","For bones and better sleep."],
+  ["Sleep and stress rituals","A wind-down routine, a cool room, and less caffeine and alcohol for hot flushes."],
+  ["Outdoors and together","Daylight, walking and time with other women all lift mood."]
+];
+
+/* ---------- state ---------- */
+function sampleState(){
+  const t=todayISO();const lens=[28,30,27,29,28,31,28,29];
+  let s=addDays(t,-19);const periods=[];
+  for(let i=0;i<lens.length;i++){periods.unshift({start:s,end:addDays(s,4)});s=addDays(s,-lens[i]);}
+  const logs={};logs[t]={symptoms:["cravings","bloating"],sleep:"ok"};logs[addDays(t,-1)]={symptoms:["cravings"],sleep:"bad"};
+  return {v:1,sample:true,onboarded:true,stage:"cycle",periods,periodLen:5,allergies:[],diets:[],otherAllergy:"",supps:["vitd"],suppCheck:addDays(t,-12),logs,source:"Sample data"};
+}
+let S=sampleState();
+let store={mode:"sample",db:null,ref:null,uid:null,me:null};
+let ui={tab:"today",sheet:null,ob:null};
+
+function lsGet(){try{const r=localStorage.getItem("ck-state");return r?JSON.parse(r):null}catch(e){return null}}
+function lsSet(v){try{localStorage.setItem("ck-state",JSON.stringify(v))}catch(e){}}
+let saving=Promise.resolve(),saveTimer=null;
+function save(){
+  if(S.sample)return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    const body=JSON.parse(JSON.stringify(S));
+    if(store.mode==="db"&&store.ref){
+      saving=saving.then(()=>store.ref.set(body)).catch(()=>{store.mode="local";lsSet(body);toast("Couldn't save to your account. Saved on this device instead.")});
+    }else lsSet(body);
+  },500);
+}
+
+/* ---------- prediction ---------- */
+function analyse(st){
+  const t=todayISO();
+  const ps=(st.periods||[]).filter(p=>p.start&&p.start<=t).sort((a,b)=>a.start<b.start?-1:1);
+  if(!ps.length)return null;
+  const lens=[];for(let i=1;i<ps.length;i++){const d=diff(ps[i].start,ps[i-1].start);if(d>=18&&d<=50)lens.push(d)}
+  const recent=lens.slice(-6);
+  let avg=28,sd=0;
+  if(recent.length){let wsum=0,tot=0;recent.forEach((l,i)=>{wsum+=(i+1)*l;tot+=i+1});avg=Math.round(wsum/tot);
+    const m=recent.reduce((a,b)=>a+b,0)/recent.length;sd=Math.sqrt(recent.reduce((a,b)=>a+(b-m)*(b-m),0)/recent.length)}
+  const pl=ps.filter(p=>p.end).map(p=>diff(p.end,p.start)+1).filter(x=>x>=2&&x<=10);
+  const periodLen=pl.length?Math.round(pl.slice(-6).reduce((a,b)=>a+b,0)/Math.min(pl.length,6)):(st.periodLen||5);
+  const last=ps[ps.length-1];
+  const day=diff(t,last.start)+1;
+  const ovDay=Math.max(10,avg-14);
+  const ends={menstrual:periodLen,follicular:ovDay-2,ovulation:ovDay+1,luteal:avg};
+  let phase;
+  const openPeriod=!last.end&&day<=10;
+  if(day<=periodLen||openPeriod)phase="menstrual";
+  else if(day<ovDay-1)phase="follicular";
+  else if(day<=ovDay+1)phase="ovulation";
+  else phase="luteal";
+  const irregular=sd>7||(st.stage==="peri"&&sd>4);
+  const spread=Math.max(2,Math.round(sd));
+  const nextStart=addDays(last.start,avg);
+  return {day,avg,sd,periodLen,phase,ovDay,ovDate:addDays(last.start,ovDay-1),nextStart,
+    daysLeft:Math.max(0,ends[phase]-day),late:day>avg,
+    irregular,range:[addDays(nextStart,-spread),addDays(nextStart,spread)],lastStart:last.start,count:ps.length,lens};
+}
+
+/* ---------- filtering ---------- */
+function blocked(tags){
+  const a=new Set(S.allergies||[]);const d=new Set(S.diets||[]);
+  tags=tags||[];
+  for(const t of tags){
+    if(a.has(t))return true;
+    if(t==="meat"&&(d.has("vegetarian")||d.has("vegan")||d.has("pescatarian")))return true;
+    if(t==="fish"&&(d.has("vegetarian")||d.has("vegan")))return true;
+    if((t==="dairy"||t==="egg")&&d.has("vegan"))return true;
+    if(t==="dairy"&&d.has("dairyfree"))return true;
+  }
+  return false;
+}
+const seedFree=()=>(S.allergies||[]).includes("seeds");
+function foodsFor(phase){
+  return FOODS[phase].filter(f=>{
+    if(f.swap&&!seedFree())return false;
+    if(f.seed&&seedFree())return false;
+    return !blocked(f.t);
+  });
+}
+function waysFor(f){return f.w.map(w=>Array.isArray(w)?w:[w,[]]).filter(w=>!blocked(w[1])).map(w=>w[0])}
+
+/* ---------- render helpers ---------- */
+const app=document.getElementById("app");
+const tabsEl=document.getElementById("tabs");
+const overlay=document.getElementById("overlay");
+function setPhase(p){document.documentElement.setAttribute("data-phase",p||"")}
+function toast(msg){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+
+const ICON={
+  today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  cycle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v4h-4"/></svg>',
+  peri:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21c-5-3-8-7-8-11a8 8 0 0 1 16 0c0 4-3 8-8 11z"/><path d="M12 7v8M9 11h6"/></svg>',
+  more:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'
+};
+function renderTabs(){
+  if(ui.ob){tabsEl.hidden=true;return}
+  tabsEl.hidden=false;
+  const t=(k,l)=>`<button class="tab" data-tab="${k}" ${ui.tab===k?'aria-current="page"':""}>${ICON[k]}<span>${l}</span></button>`;
+  tabsEl.innerHTML=`<div class="tabs-in">${t("today","Today")}${t("cycle","Cycle")}<button class="tab log" data-act="log" aria-label="Log period, symptoms or sleep"><span class="dot" aria-hidden="true">+</span><span style="color:var(--fg)">Log</span></button>${t("peri","Perimenopause")}${t("more","You")}</div>`;
+}
+function header(){
+  const av=store.me&&store.me.avatarUrl?`<img class="avatar" alt="" src="${esc(store.me.avatarUrl)}">`:"";
+  return `<div class="top"><span class="brand">Cycle Kitchen</span>${av}</div>`+
+    (S.sample?`<div class="banner"><span>You're looking at sample data.</span><button class="btn small" data-act="start">Set up mine</button></div>`:"");
+}
+function strip(a){
+  const n=Math.max(a.avg,a.day);let h="";
+  for(let d=1;d<=n;d++){let c=d<=a.periodLen?"m":d<a.ovDay-1?"f":d<=a.ovDay+1?"o":"l";h+=`<span class="${c}${d===a.day?" now":""}" title="Day ${d}"></span>`}
+  return `<div class="strip" style="grid-template-columns:repeat(${n},1fr)" role="img" aria-label="Cycle day ${a.day} of about ${a.avg}">${h}</div><div class="legend"><span>Day 1</span><span>Ovulation ~ day ${a.ovDay}</span><span>Day ${a.avg}</span></div>`;
+}
+function foodList(phase){
+  return foodsFor(phase).map(f=>{const ways=waysFor(f);
+    return `<details class="food"><summary><span><span class="nm">${esc(f.n)}</span>${f.seed?'<span class="tag">Seed cycling</span>':""}<br><span class="why">${esc(f.why)}</span></span><span class="more">Ways to eat it</span></summary><ul>${ways.map(w=>`<li>${esc(w)}</li>`).join("")}</ul></details>`}).join("");
+}
+
+/* ---------- views ---------- */
+function viewToday(){
+  const a=analyse(S);
+  if(!a){setPhase("");return header()+`<div class="card stack"><h2>Add a period to get started</h2><p class="muted">Log the start date of your last period, or import your history from another app.</p><button class="btn" data-act="log">Log a period</button></div>`}
+  setPhase(a.phase);
+  const P=PHASES[a.phase];const nx=ORDER[(ORDER.indexOf(a.phase)+1)%4];
+  const t=todayISO();const lg=(S.logs||{})[t]||{};
+  const syms=(lg.symptoms||[]).map(k=>SYMPTOMS.find(s=>s.k===k)).filter(Boolean);
+  let left;
+  if(a.phase==="luteal"&&a.late)left=a.irregular?"Your period could start any day":"Your period is due, it could start any day";
+  else left=a.daysLeft<=0?"Last day of this phase":`About ${a.daysLeft} day${a.daysLeft===1?"":"s"} left in this phase`;
+  const symCard=syms.length?`<div class="card hi stack"><span class="label">For today's ${syms.map(s=>s.n.toLowerCase()).join(" and ")}</span><ul class="clean">${[...new Set(syms.flatMap(s=>s.f.map(x=>Array.isArray(x)?x:[x,[]]).filter(x=>!blocked(x[1])).map(x=>x[0])))].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:"";
+  const notTaken=SUPPS.filter(s=>s.nudge&&!(S.supps||[]).includes(s.k)&&(s.phase.includes(a.phase)||(s.k==="vitd"&&[9,10,11,0,1,2].includes(new Date().getMonth()))));
+  const supp=notTaken[0];
+  const checkDue=(S.supps||[]).length&&(!S.suppCheck||diff(t,S.suppCheck)>=30);
+  const periMode=S.stage==="peri"||a.irregular;
+  return header()+`
+  <section class="hero stack" aria-label="Today">
+    <span class="label">${fmt(t,{weekday:"long",day:"numeric",month:"long"})}</span>
+    <div><div class="day">${esc(P.name)}</div><p class="muted" style="margin-top:6px">Day ${a.day} of your cycle · ${esc(P.mood)}</p></div>
+    ${strip(a)}
+    <p class="small">${esc(left)}</p>
+  </section>
+  <div class="stack-lg" style="margin-top:20px">
+    ${symCard}
+    <section class="card" aria-labelledby="eat-h">
+      <div class="row" style="justify-content:space-between;margin-bottom:4px"><h2 id="eat-h">Eat this phase</h2></div>
+      <p class="small muted" style="margin-bottom:6px">Tap a food for easy ways to get it in.</p>
+      ${foodList(a.phase)}
+    </section>
+    <section class="card soft stack" aria-labelledby="next-h">
+      <h3 id="next-h">Coming up next: ${esc(PHASES[nx].name)}</h3>
+      <p class="small muted">${a.phase==="luteal"?`Period expected ${a.irregular?`between ${fmt(a.range[0])} and ${fmt(a.range[1])}`:`around ${fmt(a.nextStart)}`}.`:"Worth adding to your next shop:"}</p>
+      <div class="next">${foodsFor(nx).slice(0,6).map(f=>`<span>${esc(f.n)}</span>`).join("")}</div>
+    </section>
+    <section class="card stack"><span class="label">Now's a great time to</span><p>${esc(P.great)}</p></section>
+    <section class="card stack"><span class="label">Sleep</span><p>${esc(P.sleep)}</p>
+      ${lg.sleep?`<p class="small muted">Logged today: slept ${lg.sleep==="bad"?"badly":lg.sleep==="ok"?"OK":"well"}.</p>`:`<button class="link small" data-act="log" style="align-self:flex-start">Log last night's sleep</button>`}</section>
+    ${periMode?`<section class="card soft stack"><span class="label">Perimenopause support</span><p>${a.irregular?"Your cycles have been varying, so dates are shown as a range and we lean on what you log.":"Strength training, protein at every meal and phytoestrogens all help through this transition."}</p><button class="link small" data-tab="peri" style="align-self:flex-start">See what helps</button></section>`:""}
+    ${checkDue?`<section class="card hi stack"><span class="label">Quick check-in</span><p>Still taking ${esc((S.supps||[]).map(k=>(SUPPS.find(s=>s.k===k)||{n:k}).n).join(", "))}?</p><div class="row"><button class="btn small" data-act="supp-yes">Yes</button><button class="btn small ghost" data-tab="supps">Update</button></div></section>`:
+      supp?`<section class="card stack"><span class="label">Supplement idea</span><p>${esc(supp.nudge)}</p><button class="link small" data-tab="supps" style="align-self:flex-start">About supplements</button></section>`:""}
+  </div>`;
+}
+
+function viewCycle(){
+  const a=analyse(S);
+  setPhase(a?a.phase:"");
+  const ps=(S.periods||[]).slice().sort((x,y)=>x.start<y.start?1:-1);
+  const rows=ps.slice(0,8).map((p,i)=>{const nextP=ps[i-1];const len=nextP?diff(nextP.start,p.start):null;
+    return `<tr><td>${fmt(p.start,{day:"numeric",month:"short",year:"numeric"})}</td><td>${p.end?diff(p.end,p.start)+1+" days":"Ongoing"}</td><td>${len?len+" days":"Current"}</td></tr>`}).join("");
+  return header()+`<div class="stack-lg">
+  <h1>Your cycle</h1>
+  ${a?`<div class="stat">
+    <div class="card"><span class="label">Next period</span><div class="v">${a.irregular?fmt(a.range[0])+"–"+fmt(a.range[1]):fmt(a.nextStart)}</div></div>
+    <div class="card"><span class="label">Ovulation</span><div class="v">${a.day>a.ovDay+1?"Passed":"~ "+fmt(a.ovDate)}</div></div>
+    <div class="card"><span class="label">Average cycle</span><div class="v">${a.avg} days</div></div>
+    <div class="card"><span class="label">Average period</span><div class="v">${a.periodLen} days</div></div>
+  </div>
+  <p class="small muted">Predicted from your ${a.lens.length>1?"last "+Math.min(a.lens.length,6)+" cycles":"cycle history"}, weighting the most recent most. Ovulation is placed about 14 days before your next period. ${a.irregular?"Your cycle lengths vary a lot, so we show a range.":""} Every period you log sharpens this.</p>`:`<p class="muted">No periods logged yet.</p>`}
+  <section class="card stack"><div class="row" style="justify-content:space-between"><h2>History</h2><button class="btn small" data-act="log">Log a period</button></div>
+    ${rows?`<div style="overflow-x:auto"><table class="hist"><thead><tr><th>Started</th><th>Period</th><th>Cycle</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<p class="muted small">Nothing here yet.</p>`}
+  </section>
+  <section class="card soft stack"><h3>Import from another app</h3><p class="small muted">Bring in your history from Flo or another tracker. You can keep logging here afterwards.</p><button class="btn ghost small" data-act="import" style="align-self:flex-start">Import a file</button></section>
+  </div>`;
+}
+
+function viewPeri(){
+  const a=analyse(S);setPhase(a?a.phase:"");
+  return header()+`<div class="stack-lg">
+  <div class="stack"><span class="label">A new phase</span><h1>Perimenopause</h1>
+  <p>Perimenopause is the transition before your periods stop, often starting in your late 30s or 40s. Oestrogen and progesterone start to rise and fall less predictably, which can show up as changes to your cycle, sleep, mood and temperature. It's a time to get to know your body again, and food and movement can make a real difference.</p></div>
+  <section class="card stack"><h2>Common signs</h2><div class="next">${["Shorter or longer cycles","Heavier or lighter periods","Hot flushes","Night sweats","Broken sleep","Brain fog","Mood shifts","Joint aches"].map(x=>`<span style="background:var(--surface2)">${x}</span>`).join("")}</div></section>
+  <section class="card stack"><h2>What helps</h2>${PERI_HELPS.map(h=>`<div><b>${esc(h[0])}</b><p class="small muted">${esc(h[1])}</p></div>`).join("")}</section>
+  <section class="card soft stack"><h3>Symptom-led mode</h3><p class="small">When your cycles get irregular, Cycle Kitchen shows dates as a range and builds suggestions from what you log, so the advice stays useful even when your cycle isn't predictable.</p>
+  <button class="btn small" data-act="toggle-peri" style="align-self:flex-start">${S.stage==="peri"?"Turn off perimenopause mode":"Turn on perimenopause mode"}</button></section>
+  <section class="stack"><span class="label">Good to know</span><p class="small muted">If your bleeding becomes very heavy, or symptoms are getting in the way of daily life, it's worth a chat with your GP. They can talk through options including HRT.</p></section>
+  </div>`;
+}
+
+function viewSupps(){
+  const a=analyse(S);setPhase(a?a.phase:"");
+  const stage=S.stage==="peri"?"peri":"cycle";
+  const card=s=>`<div class="card stack"><div class="row" style="justify-content:space-between"><h3>${esc(s.n)}</h3><button class="chip" data-supp="${s.k}" aria-pressed="${(S.supps||[]).includes(s.k)}">${(S.supps||[]).includes(s.k)?"I take this":"I don't take this"}</button></div><p class="small">${esc(s.what)}</p></div>`;
+  return header()+`<div class="stack-lg">
+  <button class="link small" data-tab="more" style="align-self:flex-start">Back</button>
+  <div class="stack"><h1>Supplements</h1><p class="muted">Grouped by life stage. Mark the ones you take and we'll stop suggesting them. Check with a pharmacist or GP before starting something new.</p></div>
+  <section class="stack"><span class="label">${stage==="peri"?"For perimenopause":"For your cycling years"}</span>${SUPPS.filter(s=>s.stage.includes(stage)).map(card).join("")}</section>
+  <section class="stack"><span class="label">${stage==="peri"?"Also useful in your cycling years":"Coming into perimenopause"}</span>${SUPPS.filter(s=>!s.stage.includes(stage)).map(card).join("")}</section>
+  </div>`;
+}
+
+function viewMore(){
+  const a=analyse(S);setPhase(a?a.phase:"");
+  const name=store.me&&store.me.name;
+  const signed=store.mode==="db";
+  const al=(S.allergies||[]).map(k=>ALLERGIES.find(x=>x[0]===k)[1]);if(S.otherAllergy)al.push(S.otherAllergy);
+  const di=(S.diets||[]).map(k=>DIETS.find(x=>x[0]===k)[1]);
+  return header()+`<div class="stack-lg">
+  <h1>${name?esc(name.split(" ")[0]):"You"}</h1>
+  <section class="card stack"><span class="label">Account</span>
+    <p>${signed?`Signed in${name?" as "+esc(name):""} with your Claude account. Your data syncs across your devices.`:S.sample?"You're viewing sample data. Set up your own to start saving.":inClaude?"Saved on this device only. Open Cycle Kitchen while signed in to claude.ai to sync across devices.":"Saved in this browser only. Accounts that sync across devices are coming in a future version."}</p></section>
+  <section class="card stack"><div class="row" style="justify-content:space-between"><span class="label">Food needs</span><button class="link small" data-act="edit-diet">Edit</button></div>
+    <p>${al.length?"Avoiding: "+esc(al.join(", ")):"No allergies set"}</p><p class="small muted">${di.length?esc(di.join(", ")):"No dietary preferences set"}</p></section>
+  <button class="card stack" data-tab="supps" style="text-align:left;border:0;cursor:pointer;font:inherit;color:inherit"><span class="label">Supplements</span><span>${(S.supps||[]).length?esc((S.supps||[]).map(k=>(SUPPS.find(s=>s.k===k)||{n:k}).n).join(", ")):"None marked"} ›</span></button>
+  <section class="card stack"><span class="label">Life stage</span><div class="row">
+    <button class="chip" data-stage="cycle" aria-pressed="${S.stage!=="peri"}">Cycling as usual</button><button class="chip" data-stage="peri" aria-pressed="${S.stage==="peri"}">Perimenopause</button></div></section>
+  <section class="card stack"><span class="label">Your privacy</span>
+    <ul class="clean small"><li>Your cycle, symptom and sleep data is never sold or shared.</li><li>Only you can see it. It's kept in your own private space, not visible to anyone else who opens this app.</li><li>You can delete everything at any time.</li></ul>
+    ${S.sample?"":(ui.confirmDelete?`<p class="small">This permanently removes your periods, logs and settings.</p><div class="row"><button class="btn small" data-act="delete-yes">Delete everything</button><button class="btn small ghost" data-act="delete-no">Keep my data</button></div>`:`<button class="link small" data-act="delete" style="align-self:flex-start">Delete my data</button>`)}
+  </section>
+  <p class="small muted">Cycle Kitchen is a prototype. Suggestions are general wellbeing information, not medical advice.</p>
+  </div>`;
+}
+
+/* ---------- onboarding ---------- */
+function startOnboarding(){
+  ui.ob={step:0,data:{stage:"cycle",periods:[],periodLen:5,allergies:[],diets:[],otherAllergy:"",supps:[],source:""},manual:[""],importMsg:""};
+  render();
+}
+function viewOnboarding(){
+  const o=ui.ob,d=o.data;setPhase("");
+  const steps=`<div class="steps" aria-hidden="true">${[0,1,2,3,4].map(i=>`<span class="${i<=o.step?"on":""}"></span>`).join("")}</div>`;
+  const nav=(next,label)=>`<div class="row" style="justify-content:space-between;margin-top:8px">${o.step>0?`<button class="btn ghost" data-ob="back">Back</button>`:`<button class="btn ghost" data-ob="cancel">Not now</button>`}<button class="btn" data-ob="${next}">${label||"Continue"}</button></div>`;
+  let body="";
+  if(o.step===0){
+    const name=store.me&&store.me.name;
+    body=`<h1>Welcome to Cycle Kitchen</h1><p class="muted">Food for every phase of your cycle, and for perimenopause too.</p>
+    <div class="card stack">${store.uid?`<div class="row">${store.me&&store.me.avatarUrl?`<img class="avatar" alt="" src="${esc(store.me.avatarUrl)}">`:""}<div><b>${name?"Signed in as "+esc(name):"Signed in"}</b><p class="small muted">with your Claude account. Your data is private to you and syncs across devices.</p></div></div>`:
+      (inClaude?`<b>You're not signed in</b><p class="small muted">Open this page while signed in to claude.ai to save to your account. You can still try it now; your data will stay on this device.</p>`:`<b>Your data stays on this device</b><p class="small muted">Accounts are coming in a future version. For now, everything you enter is saved in this browser only and never leaves it.</p>`)}</div>
+    ${nav("next","Get started")}`;
+  }else if(o.step===1){
+    body=`<span class="label">Step 1 of 4</span><h1>Where are you at?</h1>
+    <div class="stack">
+      <button class="opt" data-pick="cycle" aria-pressed="${d.stage==="cycle"}"><span><b>Cycling as usual</b><span class="small muted">Fairly regular periods</span></span></button>
+      <button class="opt" data-pick="peri" aria-pressed="${d.stage==="peri"}"><span><b>Noticing changes</b><span class="small muted">Irregular cycles, hot flushes, broken sleep or other signs of perimenopause</span></span></button>
+    </div>${nav("next")}`;
+  }else if(o.step===2){
+    body=`<span class="label">Step 2 of 4</span><h1>Your cycle history</h1><p class="muted">Import from another app, or add your last few period start dates. The more you add, the better the predictions.</p>
+    <div class="drop stack"><b>Import from Flo or another tracker</b><p class="small muted">In Flo you can request a copy of your data from its settings. It arrives by email as a file. Upload it here (JSON or CSV).</p>
+      <label class="btn ghost small" style="align-self:center">Choose file<input type="file" id="ob-file" accept=".json,.csv,.txt,application/json,text/csv" hidden></label>
+      ${o.importMsg?`<p class="small" role="status">${esc(o.importMsg)}</p>`:""}</div>
+    <div class="card stack"><b>Or add dates yourself</b>
+      ${o.manual.map((v,i)=>`<label class="small muted" for="pd-${i}">Period ${i===0?"started most recently":"before that"}</label><input type="date" id="pd-${i}" data-manual="${i}" value="${esc(v)}" max="${todayISO()}">`).join("")}
+      <button class="link small" data-ob="addrow" style="align-self:flex-start">Add another date</button>
+      <label class="small muted" for="pl">Usual period length (days)</label><input type="number" id="pl" min="2" max="10" value="${d.periodLen}">
+    </div>
+    <p class="small muted" id="ob-err" role="alert"></p>
+    ${nav("next")}`;
+  }else if(o.step===3){
+    body=`<span class="label">Step 3 of 4</span><h1>Food needs</h1><p class="muted">We'll never suggest anything you're allergic to.</p>
+    <div class="card stack"><b>Allergies</b><div class="row">${ALLERGIES.map(x=>`<button class="chip" data-al="${x[0]}" aria-pressed="${d.allergies.includes(x[0])}">${x[1]}</button>`).join("")}</div>
+      <label class="small muted" for="oa">Anything else</label><input type="text" id="oa" value="${esc(d.otherAllergy)}" placeholder="Kiwi"></div>
+    <div class="card stack"><b>Preferences</b><div class="row">${DIETS.map(x=>`<button class="chip" data-di="${x[0]}" aria-pressed="${d.diets.includes(x[0])}">${x[1]}</button>`).join("")}</div></div>
+    ${d.allergies.includes("seeds")?`<p class="small muted">Seed cycling will be swapped for seed-free foods with the same nutrients.</p>`:""}
+    ${nav("next")}`;
+  }else{
+    body=`<span class="label">Step 4 of 4</span><h1>Do you take any supplements?</h1><p class="muted">We'll only suggest ones you don't already take, and check in about once a month.</p>
+    <div class="row">${SUPPS.map(s=>`<button class="chip" data-os="${s.k}" aria-pressed="${d.supps.includes(s.k)}">${s.n}</button>`).join("")}</div>
+    ${nav("finish","Show my day")}`;
+  }
+  return `<div class="top"><span class="brand">Cycle Kitchen</span></div>${steps}<div class="stack-lg">${body}</div>`;
+}
+function obReadManual(){
+  const o=ui.ob;document.querySelectorAll("[data-manual]").forEach(el=>{o.manual[+el.dataset.manual]=el.value});
+  const pl=document.getElementById("pl");if(pl)o.data.periodLen=Math.min(10,Math.max(2,+pl.value||5));
+  const oa=document.getElementById("oa");if(oa)o.data.otherAllergy=oa.value.trim().slice(0,80);
+}
+function obNext(){
+  const o=ui.ob;obReadManual();
+  if(o.step===2){
+    const man=o.manual.filter(Boolean).map(s=>({start:s,end:addDays(s,o.data.periodLen-1)}));
+    const all=mergePeriods(o.data.periods,man);
+    if(!all.length){const e=document.getElementById("ob-err");if(e)e.textContent="Add at least one period start date, or import a file.";return}
+    o.data.periods=all;
+  }
+  o.step++;render();
+}
+function finishOnboarding(){
+  obReadManual();const d=ui.ob.data;
+  S={v:1,sample:false,onboarded:true,stage:d.stage,periods:d.periods,periodLen:d.periodLen,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,suppCheck:todayISO(),logs:{},source:d.source||"Logged in Cycle Kitchen"};
+  ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("You're all set");
+}
+
+/* ---------- import ---------- */
+function toDate(v){
+  if(v==null)return null;
+  if(typeof v==="number"){const ms=v>1e12?v:v>1e9?v*1000:null;if(!ms)return null;const d=new Date(ms);return isNaN(d)?null:iso(d)}
+  if(typeof v!=="string")return null;
+  const m=v.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[1]+"-"+m[2]+"-"+m[3];
+  const u=v.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/);if(u)return u[3]+"-"+u[2].padStart(2,"0")+"-"+u[1].padStart(2,"0");
+  if(/^\d{10,13}$/.test(v))return toDate(+v);
+  return null;
+}
+function mergePeriods(a,b){
+  const all=[...(a||[]),...(b||[])].filter(p=>p&&p.start).sort((x,y)=>x.start<y.start?-1:1);
+  const out=[];for(const p of all){const last=out[out.length-1];
+    if(last&&Math.abs(diff(p.start,last.start))<=3){if(p.end&&(!last.end||p.end>last.end))last.end=p.end}
+    else out.push({start:p.start,end:p.end||null})}
+  return out;
+}
+function parseExport(text){
+  const found=[];const days=[];
+  let json=null;try{json=JSON.parse(text)}catch(e){}
+  if(json){
+    (function walk(o,ctx){
+      if(Array.isArray(o)){o.forEach(x=>walk(x,ctx));return}
+      if(!o||typeof o!=="object")return;
+      const keys=Object.keys(o);let s=null,e=null;
+      for(const k of keys){const kl=k.toLowerCase();const v=o[k];
+        if(!s&&/start/.test(kl)&&toDate(v))s=toDate(v);
+        else if(!e&&/end/.test(kl)&&toDate(v))e=toDate(v);}
+      const typeStr=keys.filter(k=>/type|category|kind|name|event/i.test(k)).map(k=>String(o[k])).join(" ").toLowerCase();
+      if(s&&(/period|menstru|cycle|bleed/.test(typeStr+" "+ctx)||/period|menstru/.test(keys.join(" ").toLowerCase()))){found.push({start:s,end:e&&e>=s?e:null})}
+      else if(!s&&/period|menstru|bleed|flow/.test(typeStr)){const dk=keys.find(k=>/date|day|time/i.test(k)&&toDate(o[k]));if(dk)days.push(toDate(o[dk]))}
+      for(const k of keys){if(o[k]&&typeof o[k]==="object")walk(o[k],ctx+" "+k.toLowerCase())}
+    })(json,"");
+  }else{
+    text.split(/\r?\n/).forEach(line=>{const ds=(line.match(/\d{4}-\d{2}-\d{2}|\d{1,2}[\/.]\d{1,2}[\/.]\d{4}/g)||[]).map(toDate).filter(Boolean);
+      if(ds.length)found.push({start:ds[0],end:ds[1]&&ds[1]>=ds[0]?ds[1]:null})});
+  }
+  if(days.length){const u=[...new Set(days)].sort();let cur=null;
+    for(const d of u){if(cur&&diff(d,cur.end)<=1)cur.end=d;else{cur={start:d,end:d};found.push(cur)}}}
+  const t=todayISO();
+  return mergePeriods([],found.filter(p=>p.start<=t&&p.start>"1990"));
+}
+function readFile(file,cb){
+  if(!file)return;if(file.size>15e6){cb(null,"That file is too large. Try the export file on its own.");return}
+  const r=new FileReader();r.onload=()=>{const ps=parseExport(String(r.result));cb(ps,ps.length?null:"We couldn't find any period dates in that file. Check it's the export from your cycle app, or add dates by hand.")};
+  r.onerror=()=>cb(null,"That file couldn't be read. Try choosing it again.");r.readAsText(file);
+}
+
+/* ---------- log sheet ---------- */
+function openSheet(kind){ui.sheet=kind;renderSheet()}
+function closeSheet(){ui.sheet=null;overlay.innerHTML="";document.body.style.overflow=""}
+function renderSheet(){
+  if(!ui.sheet){overlay.innerHTML="";return}
+  document.body.style.overflow="hidden";
+  const t=todayISO();
+  let inner="";
+  if(ui.sheet==="log"){
+    const lg=(S.logs||{})[t]||{symptoms:[],sleep:null};
+    const ps=(S.periods||[]).slice().sort((a,b)=>a.start<b.start?-1:1);const last=ps[ps.length-1];
+    const open=last&&!last.end&&diff(t,last.start)<=10;
+    const peri=S.stage==="peri";
+    const symList=SYMPTOMS.filter(s=>peri||!s.peri);
+    inner=`<h2 id="sheet-h">Log today</h2>
+    <div class="stack"><span class="label">Period</span>
+      <div class="row">${open?`<button class="btn small" data-act="p-end">My period ended today</button>`:`<button class="btn small" data-act="p-start">My period started today</button>`}
+      <button class="link small" data-act="p-other">Another date</button></div>
+      ${ui.otherDate?`<div class="row"><input type="date" id="other-date" max="${t}" style="flex:1"><button class="btn small" data-act="p-other-save">Add</button></div>`:""}
+    </div>
+    <div class="stack"><span class="label">How are you feeling?</span><div class="row">${symList.map(s=>`<button class="chip" data-sym="${s.k}" aria-pressed="${(lg.symptoms||[]).includes(s.k)}">${s.n}</button>`).join("")}</div></div>
+    <div class="stack"><span class="label">Last night's sleep</span><div class="seg">${[["bad","Badly"],["ok","OK"],["good","Well"]].map(x=>`<button class="chip" data-sleep="${x[0]}" aria-pressed="${lg.sleep===x[0]}">${x[1]}</button>`).join("")}</div></div>
+    <button class="btn block" data-act="close">Done</button>`;
+  }else if(ui.sheet==="import"){
+    inner=`<h2 id="sheet-h">Import your history</h2><p class="small muted">Upload the export from Flo or another tracker (JSON or CSV). We'll add any periods we find to what's already here.</p>
+    <label class="btn" style="align-self:flex-start">Choose file<input type="file" id="sheet-file" accept=".json,.csv,.txt,application/json,text/csv" hidden></label>
+    ${ui.importMsg?`<p class="small" role="status">${esc(ui.importMsg)}</p>`:""}<button class="btn ghost block" data-act="close">Close</button>`;
+  }else if(ui.sheet==="diet"){
+    inner=`<h2 id="sheet-h">Food needs</h2><div class="stack"><span class="label">Allergies</span><div class="row">${ALLERGIES.map(x=>`<button class="chip" data-sal="${x[0]}" aria-pressed="${(S.allergies||[]).includes(x[0])}">${x[1]}</button>`).join("")}</div>
+    <label class="small muted" for="soa">Anything else</label><input type="text" id="soa" value="${esc(S.otherAllergy||"")}" placeholder="Kiwi"></div>
+    <div class="stack"><span class="label">Preferences</span><div class="row">${DIETS.map(x=>`<button class="chip" data-sdi="${x[0]}" aria-pressed="${(S.diets||[]).includes(x[0])}">${x[1]}</button>`).join("")}</div></div>
+    <button class="btn block" data-act="diet-save">Save</button>`;
+  }
+  overlay.innerHTML=`<div class="sheet-wrap" data-act="backdrop"><div class="sheet stack-lg" role="dialog" aria-modal="true" aria-labelledby="sheet-h"><div class="grip"></div>${inner}</div></div>`;
+}
+function setLog(fn){S.logs=S.logs||{};const t=todayISO();const lg=S.logs[t]||{symptoms:[],sleep:null};fn(lg);S.logs[t]=lg;
+  const keys=Object.keys(S.logs).sort();if(keys.length>400)keys.slice(0,keys.length-400).forEach(k=>delete S.logs[k]);
+  if(S.sample){S.sample=false;S.source="Sample data"}save()}
+
+/* ---------- main render & events ---------- */
+function render(){
+  let html;
+  if(ui.ob)html=viewOnboarding();
+  else if(ui.tab==="cycle")html=viewCycle();
+  else if(ui.tab==="peri")html=viewPeri();
+  else if(ui.tab==="supps")html=viewSupps();
+  else if(ui.tab==="more")html=viewMore();
+  else html=viewToday();
+  app.innerHTML=html;renderTabs();renderSheet();
+}
+function go(tab){ui.tab=tab;ui.confirmDelete=false;render();scrollTo(0,0)}
+function toggle(arr,k){const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else arr.push(k);return arr}
+function ensureReal(){if(S.sample){startOnboarding();return false}return true}
+
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-tab],[data-act],[data-ob],[data-pick],[data-al],[data-di],[data-os],[data-sym],[data-sleep],[data-supp],[data-stage],[data-sal],[data-sdi]");
+  if(!el)return;const ds=el.dataset;
+  if(ds.act==="backdrop"&&e.target!==el)return;
+  if(ds.tab){closeSheet();go(ds.tab);return}
+  if(ds.ob){if(ds.ob==="next")obNext();else if(ds.ob==="back"){obReadManual();ui.ob.step--;render()}else if(ds.ob==="cancel"){ui.ob=null;render()}else if(ds.ob==="addrow"){obReadManual();ui.ob.manual.push("");render()}else if(ds.ob==="finish")finishOnboarding();return}
+  if(ds.pick){ui.ob.data.stage=ds.pick;render();return}
+  if(ds.al){obReadManual();toggle(ui.ob.data.allergies,ds.al);render();return}
+  if(ds.di){obReadManual();toggle(ui.ob.data.diets,ds.di);render();return}
+  if(ds.os){toggle(ui.ob.data.supps,ds.os);render();return}
+  if(ds.sym){if(S.sample&&!confirmLeaveSample())return;setLog(lg=>toggle(lg.symptoms,ds.sym));renderSheet();return}
+  if(ds.sleep){if(S.sample&&!confirmLeaveSample())return;setLog(lg=>{lg.sleep=lg.sleep===ds.sleep?null:ds.sleep});renderSheet();return}
+  if(ds.supp){if(!ensureReal())return;S.supps=toggle(S.supps||[],ds.supp);S.suppCheck=todayISO();save();render();return}
+  if(ds.stage){if(!ensureReal())return;S.stage=ds.stage;save();render();return}
+  if(ds.sal){S.allergies=toggle(S.allergies||[],ds.sal);renderSheet();return}
+  if(ds.sdi){S.diets=toggle(S.diets||[],ds.sdi);renderSheet();return}
+  switch(ds.act){
+    case "start":startOnboarding();scrollTo(0,0);break;
+    case "log":if(S.sample){startOnboarding();return}ui.otherDate=false;openSheet("log");break;
+    case "import":if(!ensureReal())return;ui.importMsg="";openSheet("import");break;
+    case "edit-diet":if(!ensureReal())return;openSheet("diet");break;
+    case "diet-save":{const o=document.getElementById("soa");S.otherAllergy=o?o.value.trim().slice(0,80):"";save();closeSheet();render();toast("Food needs saved");break}
+    case "close":closeSheet();render();break;
+    case "backdrop":closeSheet();render();break;
+    case "p-start":{const t=todayISO();S.periods=mergePeriods(S.periods,[{start:t,end:null}]);save();closeSheet();render();toast("Period logged. Welcome to your menstrual phase.");break}
+    case "p-end":{const t=todayISO();const ps=S.periods.slice().sort((a,b)=>a.start<b.start?-1:1);ps[ps.length-1].end=t;S.periods=ps;save();closeSheet();render();toast("Period end logged");break}
+    case "p-other":ui.otherDate=!ui.otherDate;renderSheet();break;
+    case "p-other-save":{const v=(document.getElementById("other-date")||{}).value;if(!v)return;S.periods=mergePeriods(S.periods,[{start:v,end:addDays(v,(S.periodLen||5)-1)}]);save();ui.otherDate=false;closeSheet();render();toast("Period added to your history");break}
+    case "supp-yes":S.suppCheck=todayISO();save();render();toast("Thanks, noted");break;
+    case "toggle-peri":if(!ensureReal())return;S.stage=S.stage==="peri"?"cycle":"peri";save();render();break;
+    case "delete":ui.confirmDelete=true;render();break;
+    case "delete-no":ui.confirmDelete=false;render();break;
+    case "delete-yes":{ui.confirmDelete=false;const done=()=>{S=sampleState();render();toast("Your data has been deleted")};
+      try{localStorage.removeItem("ck-state")}catch(e){}
+      if(store.mode==="db"&&store.ref){saving=saving.then(()=>store.ref.delete()).then(done,done)}else done();break}
+  }
+});
+function confirmLeaveSample(){startOnboarding();return false}
+document.addEventListener("change",e=>{
+  if(e.target.id==="ob-file"){readFile(e.target.files[0],(ps,err)=>{const o=ui.ob;obReadManual();
+    if(ps&&ps.length){o.data.periods=mergePeriods(o.data.periods,ps);o.data.source="Imported file";o.importMsg=`Found ${ps.length} period${ps.length===1?"":"s"}, from ${fmt(ps[0].start,{month:"short",year:"numeric"})} to ${fmt(ps[ps.length-1].start,{month:"short",year:"numeric"})}.`}
+    else o.importMsg=err;render()})}
+  if(e.target.id==="sheet-file"){readFile(e.target.files[0],(ps,err)=>{
+    if(ps&&ps.length){const before=(S.periods||[]).length;S.periods=mergePeriods(S.periods,ps);save();ui.importMsg=`Added ${S.periods.length-before} new period${S.periods.length-before===1?"":"s"}. Predictions updated.`;render()}
+    else{ui.importMsg=err;renderSheet()}})}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ui.sheet){closeSheet();render()}});
+
+/* ---------- boot ---------- */
+render();
+(async function(){
+  const local=lsGet();
+  if(local&&local.onboarded){S=local;store.mode="local";render()}
+  if(!window.claude||!window.claude.use)return;
+  try{
+    const [user,db]=await Promise.all([claude.use("user"),claude.use("db")]);
+    if(user){store.me=await user.me();store.uid=store.me.id}
+    if(db&&store.uid){
+      store.db=db;store.ref=db.doc("data/users/"+store.uid+"/state");
+      const snap=await store.ref.get();
+      if(snap.exists&&snap.data()&&snap.data().onboarded){S=JSON.parse(JSON.stringify(snap.data()));store.mode="db"}
+      else if(local&&local.onboarded){store.mode="db";S.sample=false;save()}
+      else store.mode="db";
+      if(S.sample)store.mode="db";
+    }
+    render();
+  }catch(e){render()}
+})();
+})();
+</script>
+
+</body>
+</html>
