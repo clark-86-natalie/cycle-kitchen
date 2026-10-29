@@ -128,6 +128,8 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .sips li:first-child{border-top:0;padding-top:4px}
 .sips .tag{align-self:flex-start;margin:2px 0 2px}
 .fine{font-size:.78rem;line-height:1.45;color:var(--muted);margin-top:4px}
+.tick{display:flex;gap:12px;align-items:flex-start;min-height:44px;cursor:pointer;background:var(--surface);border-radius:14px;padding:12px 14px}
+.tick input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--accent)}
 .next{display:flex;flex-wrap:wrap;gap:6px}
 .next span{background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.85rem}
 
@@ -375,7 +377,7 @@ function trackerBlock(prefix,chosen,msg){
   </div>`;
 }
 const DISCLAIMER="Cycle Kitchen offers general wellbeing ideas, not medical advice. If you're trying to conceive or breastfeeding, some herbal teas and supplements we mention may not be suitable, so check with a pharmacist first.";
-const CONDITIONS=[["contra","Hormonal contraception"],["heavy","Heavy periods or fibroids"],["ibs","IBS"],["migraine","Menstrual migraine"],["pcos","PCOS"],["endo","Endometriosis"],["thyroid","Thyroid condition"],["pmdd","PMDD"],["adeno","Adenomyosis"]];
+const CONDITIONS=[["heavy","Heavy periods or fibroids"],["ibs","IBS"],["migraine","Menstrual migraine"],["pcos","PCOS"],["endo","Endometriosis"],["thyroid","Thyroid condition"],["pmdd","PMDD"],["adeno","Adenomyosis"]];
 const COND_GROUP_OF={adeno:"endo"};
 const COND_GROUPS={
   contra:{title:"Top up B vitamins",tag:"For hormonal contraception",why:"Some research suggests the pill can lower levels of B vitamins and magnesium, so it's worth eating plenty of foods rich in them.",foods:[
@@ -540,9 +542,12 @@ function groupsFor(phase){
 }
 function foodsFor(phase){return groupsFor(phase).flatMap(g=>g.foods)}
 function findFood(key){const [p,gi,fi]=String(key).split("|");if(p==="cond"){const c=COND_GROUPS[gi];return c?c.foods[+fi]:null}const g=GROUPS[p]&&GROUPS[p][+gi];return g?g.foods[+fi]:null}
+function contraTick(id,on){
+  return `<label class="tick" for="${id}"><input type="checkbox" id="${id}" ${on?"checked":""}><span>I use hormonal contraception<span class="small muted" style="display:block">Pill, implant, injection or hormonal coil</span></span></label>`;
+}
 function condGroups(a){
   const mine=S.conditions||[];
-  const ids=[...new Set(CONDITIONS.map(c=>c[0]).filter(k=>mine.includes(k)).map(k=>COND_GROUP_OF[k]||k))];
+  const ids=[...new Set(["contra"].concat(CONDITIONS.map(c=>c[0])).filter(k=>mine.includes(k)).map(k=>COND_GROUP_OF[k]||k))];
   return ids.filter(k=>COND_GROUPS[k]).filter(k=>{const c=COND_GROUPS[k];if(k==="pmdd")return a.phase==="luteal"&&a.day>=a.ovDay+5;return !c.when||c.when(a)}).map(k=>{const c=COND_GROUPS[k];
     let tag=c.tag;if(k==="endo"){const l=[mine.includes("endo")&&"endometriosis",mine.includes("adeno")&&"adenomyosis"].filter(Boolean);tag="For "+l.join(" and ")}
     return {title:c.title,tag,why:c.why,note:c.note,foods:c.foods.map((f,fi)=>Object.assign({},f,{key:"cond|"+k+"|"+fi})).filter(f=>!blocked(f.t))}}).filter(g=>g.foods.length);
@@ -761,6 +766,7 @@ function viewMore(){
   <button class="card stack" data-tab="supps" style="text-align:left;border:0;cursor:pointer;font:inherit;color:inherit"><span class="label">Supplements</span><span>${(S.supps||[]).length?esc((S.supps||[]).map(k=>(SUPPS.find(s=>s.k===k)||{n:k}).n).join(", ")):"None marked"} ›</span></button>
   <section class="card stack"><span class="label">Health conditions</span><div class="row">${CONDITIONS.map(x=>`<button class="chip" data-scond="${x[0]}" aria-pressed="${(S.conditions||[]).includes(x[0])}">${x[1]}</button>`).join("")}</div>
     <p class="small muted">Optional. We'll add foods that may help. This stays private to you.</p></section>
+  <section class="card stack"><span class="label">Contraception</span>${contraTick("you-contra",(S.conditions||[]).includes("contra"))}</section>
   <section class="card stack"><span class="label">Appearance</span><div class="row">
     ${[["auto","Automatic"],["light","Light"],["dark","Dark"]].map(x=>`<button class="chip" data-mode="${x[0]}" aria-pressed="${modePref===x[0]}">${x[1]}</button>`).join("")}</div>
     <p class="small muted">Automatic follows your phone's setting.</p></section>
@@ -838,7 +844,8 @@ function viewOnboarding(){
     ${nav}`;
   }else if(step==="conditions"){
     body=`${lab}<h1>Do any of these apply to you?</h1><p class="muted">Optional. We'll add foods that may help. This stays private to you.</p>
-    <div class="row">${CONDITIONS.map(x=>`<button class="chip" data-cond="${x[0]}" aria-pressed="${d.conditions.includes(x[0])}">${x[1]}</button>`).join("")}<button class="chip" data-cond="none" aria-pressed="${!d.conditions.length&&o.condNone===true}">None of these</button></div>
+    <div class="row">${CONDITIONS.map(x=>`<button class="chip" data-cond="${x[0]}" aria-pressed="${d.conditions.includes(x[0])}">${x[1]}</button>`).join("")}<button class="chip" data-cond="none" aria-pressed="${!d.conditions.filter(k=>k!=="contra").length&&o.condNone===true}">None of these</button></div>
+    ${contraTick("ob-contra",d.conditions.includes("contra"))}
     ${nav}`;
   }else{
     body=`${lab}<h1>Do you take any supplements?</h1><p class="muted">We'll only suggest ones you don't already take, and check in about once a month.</p>
@@ -1058,7 +1065,7 @@ document.addEventListener("click",e=>{
   if(ds.al){obReadManual();toggle(ui.ob.data.allergies,ds.al);render();return}
   if(ds.di){obReadManual();toggle(ui.ob.data.diets,ds.di);render();return}
   if(ds.os){toggle(ui.ob.data.supps,ds.os);render();return}
-  if(ds.cond){const d=ui.ob.data;if(ds.cond==="none"){d.conditions=[];ui.ob.condNone=true}else{toggle(d.conditions,ds.cond);ui.ob.condNone=false}render();return}
+  if(ds.cond){const d=ui.ob.data;if(ds.cond==="none"){d.conditions=d.conditions.filter(k=>k==="contra");ui.ob.condNone=true}else{toggle(d.conditions,ds.cond);ui.ob.condNone=false}render();return}
   if(ds.scond){S.conditions=toggle(S.conditions||[],ds.scond);save();render();return}
   if(ds.sym){if(S.sample&&!confirmLeaveSample())return;setLog(lg=>toggle(lg.symptoms,ds.sym));renderSheet();return}
   if(ds.sleep){if(S.sample&&!confirmLeaveSample())return;setLog(lg=>{lg.sleep=lg.sleep===ds.sleep?null:ds.sleep});renderSheet();return}
@@ -1094,6 +1101,8 @@ document.addEventListener("click",e=>{
 });
 function confirmLeaveSample(){startOnboarding();return false}
 document.addEventListener("change",e=>{
+  if(e.target.id==="ob-contra"){const d=ui.ob.data;d.conditions=d.conditions.filter(k=>k!=="contra");if(e.target.checked)d.conditions.push("contra");return}
+  if(e.target.id==="you-contra"){S.conditions=(S.conditions||[]).filter(k=>k!=="contra");if(e.target.checked)S.conditions.push("contra");save();render();return}
   if(e.target.id==="ob-tracker"){obReadManual();ui.ob.tracker=e.target.value;ui.ob.importMsg="";render();const el=document.getElementById("ob-tracker");if(el)el.focus();return}
   if(e.target.id==="sheet-tracker"){ui.tracker=e.target.value;ui.importMsg="";if(!S.sample){S.tracker=e.target.value;save()}renderSheet();const el=document.getElementById("sheet-tracker");if(el)el.focus();return}
   if(e.target.id==="ob-file"){readFile(e.target.files[0],(ps,err)=>{const o=ui.ob;obReadManual();
