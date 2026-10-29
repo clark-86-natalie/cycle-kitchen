@@ -666,12 +666,12 @@ function viewWelcome(){
     inClaude?"You're not signed in to claude.ai, so your data will stay on this device.":"Everything you enter is saved in this browser only and never leaves it.";
   return `<div class="top"><span class="brand">Cycle Kitchen</span></div>
   <div class="stack-lg welcome">
-    <div class="stack"><h1>When did your last period start?</h1><p class="muted">That's all we need to show your day. You can add the rest later.</p></div>
+    <div class="stack"><h1>When did your last period start?</h1><p class="muted">That's all we need to work out your phase. Add the rest whenever you like.</p></div>
     <div class="stack" style="gap:10px">
       <label class="small muted" for="w-date">First day of your last period</label>
       <input type="date" id="w-date" max="${todayISO()}" value="${esc(ui.wDate||"")}">
       <p class="small" id="w-err" role="alert" style="color:var(--accent)"></p>
-      <button class="btn block" data-act="quick-start">Show my day</button>
+      <button class="btn block" data-act="quick-start">Let's eat</button>
       <button class="btn ghost block" data-act="welcome-import">Import from Flo, Clue or another app</button>
     </div>
     <ul class="feats">
@@ -688,7 +688,7 @@ function viewOnboarding(){
   const step=o.steps[o.i],n=o.steps.length,last=o.i===n-1;
   const prog=n>1?`<div class="steps" aria-hidden="true">${o.steps.map((x,i)=>`<span class="${i<=o.i?"on":""}"></span>`).join("")}</div>`:"";
   const lab=n>1?`<span class="label">Step ${o.i+1} of ${n}</span>`:"";
-  const nav=`<div class="row" style="justify-content:space-between;margin-top:8px">${o.i>0?`<button class="btn ghost" data-ob="back">Back</button>`:`<button class="btn ghost" data-ob="cancel">${o.mode==="import"?"Back":"Not now"}</button>`}<button class="btn" data-ob="${last?"finish":"next"}">${last?(o.mode==="import"?"Show my day":"Done"):"Continue"}</button></div>`;
+  const nav=`<div class="row" style="justify-content:space-between;margin-top:8px">${o.i>0?`<button class="btn ghost" data-ob="back">Back</button>`:`<button class="btn ghost" data-ob="cancel">${o.mode==="import"?"Back":"Not now"}</button>`}<button class="btn" data-ob="${last?"finish":"next"}">${last?(o.mode==="import"?"Let's eat":"Done"):"Continue"}</button></div>`;
   let body="";
   if(step==="stage"){
     body=`${lab}<h1>Where are you at?</h1>
@@ -741,7 +741,7 @@ function finishOnboarding(){
   const o=ui.ob,d=o.data;
   if(o.mode==="import"){
     S=Object.assign(freshState(),{sample:false,onboarded:true,setup:false,periods:d.periods,periodLen:d.periodLen,suppCheck:todayISO(),tracker:o.tracker||"",source:d.source||"Logged in Cycle Kitchen"});
-    ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("Here's your day");
+    ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("You're all set");
   }else{
     Object.assign(S,{stage:d.stage,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,suppCheck:todayISO(),setup:true});
     ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("All set. Your foods are tailored to you.");
