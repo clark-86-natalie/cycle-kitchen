@@ -115,6 +115,10 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .article p{max-width:65ch}
 .article .lede{font-size:1.1rem}
 .article h2{font-size:1.3rem}
+.welcome h1{font-size:2.3rem}
+.feats{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.feats li{display:flex;gap:12px;align-items:center}
+.feats .fd{width:22px;height:22px;border-radius:50%;flex:none}
 .next{display:flex;flex-wrap:wrap;gap:6px}
 .next span{background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.85rem}
 
@@ -134,7 +138,7 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg .chip{border-radius:12px;padding:10px 4px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem}
+.toast{pointer-events:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem}
 
 .steps{display:flex;gap:6px;margin-bottom:6px}
 .steps span{flex:1;height:4px;border-radius:2px;background:var(--line)}
@@ -371,16 +375,12 @@ const PERI_HELPS=[
 ];
 
 /* ---------- state ---------- */
-function sampleState(){
-  const t=todayISO();const lens=[28,30,27,29,28,31,28,29];
-  let s=addDays(t,-19);const periods=[];
-  for(let i=0;i<lens.length;i++){periods.unshift({start:s,end:addDays(s,4)});s=addDays(s,-lens[i]);}
-  const logs={};logs[t]={symptoms:["cravings","bloating"],sleep:"ok"};logs[addDays(t,-1)]={symptoms:["cravings"],sleep:"bad"};
-  return {v:1,sample:true,onboarded:true,stage:"cycle",periods,periodLen:5,allergies:[],diets:[],otherAllergy:"",supps:["vitd"],suppCheck:addDays(t,-12),logs,source:"Sample data"};
+function freshState(){
+  return {v:1,sample:true,onboarded:false,stage:"cycle",periods:[],periodLen:5,allergies:[],diets:[],otherAllergy:"",supps:[],logs:{},source:""};
 }
-let S=sampleState();
+let S=freshState();
 let store={mode:"sample",db:null,ref:null,uid:null,me:null};
-let ui={tab:"today",sheet:null,ob:null};
+let ui={tab:"today",sheet:null,ob:null,booting:true};
 
 function lsGet(){try{const r=localStorage.getItem("ck-state");return r?JSON.parse(r):null}catch(e){return null}}
 function lsSet(v){try{localStorage.setItem("ck-state",JSON.stringify(v))}catch(e){}}
@@ -475,7 +475,7 @@ const ICON={
   more:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'
 };
 function renderTabs(){
-  if(ui.ob){tabsEl.hidden=true;return}
+  if(ui.ob||S.sample||ui.booting){tabsEl.hidden=true;return}
   tabsEl.hidden=false;
   const cur={supps:"more",article:"today"}[ui.tab]||ui.tab;
   const t=(k,l)=>`<button class="tab" data-tab="${k}" ${cur===k?'aria-current="page"':""}><span class="ic">${ICON[k]}</span><span>${l}</span></button>`;
@@ -483,8 +483,7 @@ function renderTabs(){
 }
 function header(){
   const av=store.me&&store.me.avatarUrl?`<img class="avatar" alt="" src="${esc(store.me.avatarUrl)}">`:"";
-  return `<div class="top"><span class="brand">Cycle Kitchen</span>${av}</div>`+
-    (S.sample?`<div class="banner"><span>You're looking at sample data.</span><button class="btn small" data-act="start">Set up mine</button></div>`:"");
+  return `<div class="top"><span class="brand">Cycle Kitchen</span>${av}</div>`;
 }
 function strip(a){
   const n=Math.max(a.avg,a.day);let h="";
@@ -537,6 +536,7 @@ function viewToday(){
     <p class="small">${esc(left)}</p>
   </section>
   <div class="stack-lg" style="margin-top:20px">
+    ${S.setup===false&&!ui.hideSetup?`<section class="card hi stack" aria-labelledby="setup-h"><h3 id="setup-h">Finish setting up</h3><p class="small">Add any allergies or food preferences so we can tailor these foods to you, plus your life stage and supplements. It takes about a minute.</p><div class="row"><button class="btn small" data-act="setup">Finish setting up</button><button class="link small" data-act="setup-later">Later</button></div></section>`:""}
     ${symCard}
     <section class="card" aria-labelledby="eat-h">
       <h2 id="eat-h">${syms.length?"Also good this phase":"Eat this phase"}</h2>
@@ -655,30 +655,50 @@ function viewMore(){
 }
 
 /* ---------- onboarding ---------- */
-function startOnboarding(){
-  ui.ob={step:0,data:{stage:"cycle",periods:[],periodLen:5,allergies:[],diets:[],otherAllergy:"",supps:[],source:""},manual:[""],importMsg:"",tracker:""};
-  render();
+function startOnboarding(){ui.ob=null;ui.tab="today";render();scrollTo(0,0)}
+function obData(){return {stage:S.stage||"cycle",periods:(S.periods||[]).slice(),periodLen:S.periodLen||5,allergies:(S.allergies||[]).slice(),diets:(S.diets||[]).slice(),otherAllergy:S.otherAllergy||"",supps:(S.supps||[]).slice(),source:S.source||""}}
+function startImport(){ui.ob={mode:"import",steps:["history"],i:0,data:obData(),manual:[""],importMsg:"",tracker:""};render();scrollTo(0,0)}
+function startSetup(){ui.ob={mode:"setup",steps:["stage","food","supps"],i:0,data:obData(),manual:[""],importMsg:"",tracker:S.tracker||""};render();scrollTo(0,0)}
+function viewWelcome(){
+  setPhase("");
+  const name=store.me&&store.me.name;
+  const note=store.uid?`Signed in${name?" as "+esc(name):""} with your Claude account. Your data is private to you and syncs across devices.`:
+    inClaude?"You're not signed in to claude.ai, so your data will stay on this device.":"Everything you enter is saved in this browser only and never leaves it.";
+  return `<div class="top"><span class="brand">Cycle Kitchen</span></div>
+  <div class="stack-lg welcome">
+    <div class="stack"><h1>When did your last period start?</h1><p class="muted">That's all we need to show your day. You can add the rest later.</p></div>
+    <div class="stack" style="gap:10px">
+      <label class="small muted" for="w-date">First day of your last period</label>
+      <input type="date" id="w-date" max="${todayISO()}" value="${esc(ui.wDate||"")}">
+      <p class="small" id="w-err" role="alert" style="color:var(--accent)"></p>
+      <button class="btn block" data-act="quick-start">Show my day</button>
+      <button class="btn ghost block" data-act="welcome-import">Import from Flo, Clue or another app</button>
+    </div>
+    <ul class="feats">
+      <li><span class="fd" style="background:#B8A6E3"></span>What to eat today, and why it helps</li>
+      <li><span class="fd" style="background:#8FCB9B"></span>Bring your history from Flo, Clue and more</li>
+      <li><span class="fd" style="background:#FFD24D"></span>Tips for how you're feeling, from mood to bloating</li>
+      <li><span class="fd" style="background:#D9622B"></span>Support through perimenopause too</li>
+    </ul>
+    <p class="small muted">${note}</p>
+  </div>`;
 }
 function viewOnboarding(){
   const o=ui.ob,d=o.data;setPhase("");
-  const steps=`<div class="steps" aria-hidden="true">${[0,1,2,3,4].map(i=>`<span class="${i<=o.step?"on":""}"></span>`).join("")}</div>`;
-  const nav=(next,label)=>`<div class="row" style="justify-content:space-between;margin-top:8px">${o.step>0?`<button class="btn ghost" data-ob="back">Back</button>`:`<button class="btn ghost" data-ob="cancel">Not now</button>`}<button class="btn" data-ob="${next}">${label||"Continue"}</button></div>`;
+  const step=o.steps[o.i],n=o.steps.length,last=o.i===n-1;
+  const prog=n>1?`<div class="steps" aria-hidden="true">${o.steps.map((x,i)=>`<span class="${i<=o.i?"on":""}"></span>`).join("")}</div>`:"";
+  const lab=n>1?`<span class="label">Step ${o.i+1} of ${n}</span>`:"";
+  const nav=`<div class="row" style="justify-content:space-between;margin-top:8px">${o.i>0?`<button class="btn ghost" data-ob="back">Back</button>`:`<button class="btn ghost" data-ob="cancel">${o.mode==="import"?"Back":"Not now"}</button>`}<button class="btn" data-ob="${last?"finish":"next"}">${last?(o.mode==="import"?"Show my day":"Done"):"Continue"}</button></div>`;
   let body="";
-  if(o.step===0){
-    const name=store.me&&store.me.name;
-    body=`<h1>Welcome to Cycle Kitchen</h1><p class="muted">Food for every phase of your cycle, and for perimenopause too.</p>
-    <div class="card stack">${store.uid?`<div class="row">${store.me&&store.me.avatarUrl?`<img class="avatar" alt="" src="${esc(store.me.avatarUrl)}">`:""}<div><b>${name?"Signed in as "+esc(name):"Signed in"}</b><p class="small muted">with your Claude account. Your data is private to you and syncs across devices.</p></div></div>`:
-      (inClaude?`<b>You're not signed in</b><p class="small muted">Open this page while signed in to claude.ai to save to your account. You can still try it now; your data will stay on this device.</p>`:`<b>Your data stays on this device</b><p class="small muted">Accounts are coming in a future version. For now, everything you enter is saved in this browser only and never leaves it.</p>`)}</div>
-    ${nav("next","Get started")}`;
-  }else if(o.step===1){
-    body=`<span class="label">Step 1 of 4</span><h1>Where are you at?</h1>
+  if(step==="stage"){
+    body=`${lab}<h1>Where are you at?</h1>
     <div class="stack">
       <button class="opt" data-pick="cycle" aria-pressed="${d.stage==="cycle"}"><span><b>Cycling as usual</b><span class="small muted">Fairly regular periods</span></span></button>
       <button class="opt" data-pick="peri" aria-pressed="${d.stage==="peri"}"><span><b>Noticing changes</b><span class="small muted">Irregular cycles, hot flushes, broken sleep or other signs of perimenopause</span></span></button>
-    </div>${nav("next")}`;
-  }else if(o.step===2){
+    </div>${nav}`;
+  }else if(step==="history"){
     const tr=TRACKERS.find(x=>x.k===o.tracker);
-    body=`<span class="label">Step 2 of 4</span><h1>Your cycle history</h1><p class="muted">Bring in your history from the app you use now, or add your last few period start dates. The more you add, the better the predictions.</p>
+    body=`${lab}<h1>Your cycle history</h1><p class="muted">Bring in your history from the app you use now, or add your last few period start dates. The more you add, the better the predictions.</p>
     ${trackerBlock("ob",o.tracker,o.importMsg)}
     <div class="card stack"><b>${tr&&tr.slow?"Add a few dates for now":tr&&tr.k!=="none"?"Or add dates yourself":"Add your period dates"}</b>
       ${tr&&tr.slow?`<p class="small muted">Your export can take a while to arrive, so add your last few start dates to get going. You can import the full history later from the Cycle tab.</p>`:""}
@@ -686,41 +706,54 @@ function viewOnboarding(){
       <button class="link small" data-ob="addrow" style="align-self:flex-start">Add another date</button>
       <label class="small muted" for="pl">Usual period length (days)</label><input type="number" id="pl" min="2" max="10" value="${d.periodLen}">
     </div>
-    <p class="small muted" id="ob-err" role="alert"></p>
-    ${nav("next")}`;
-  }else if(o.step===3){
-    body=`<span class="label">Step 3 of 4</span><h1>Food needs</h1><p class="muted">We'll never suggest anything you're allergic to.</p>
+    <p class="small" id="ob-err" role="alert" style="color:var(--accent)"></p>
+    ${nav}`;
+  }else if(step==="food"){
+    body=`${lab}<h1>Food needs</h1><p class="muted">We'll never suggest anything you're allergic to.</p>
     <div class="card stack"><b>Allergies</b><div class="row">${ALLERGIES.map(x=>`<button class="chip" data-al="${x[0]}" aria-pressed="${d.allergies.includes(x[0])}">${x[1]}</button>`).join("")}</div>
       <label class="small muted" for="oa">Anything else</label><input type="text" id="oa" value="${esc(d.otherAllergy)}" placeholder="Kiwi"></div>
     <div class="card stack"><b>Preferences</b><div class="row">${DIETS.map(x=>`<button class="chip" data-di="${x[0]}" aria-pressed="${d.diets.includes(x[0])}">${x[1]}</button>`).join("")}</div></div>
     ${d.allergies.includes("seeds")?`<p class="small muted">Seed cycling will be swapped for seed-free foods with the same nutrients.</p>`:""}
-    ${nav("next")}`;
+    ${nav}`;
   }else{
-    body=`<span class="label">Step 4 of 4</span><h1>Do you take any supplements?</h1><p class="muted">We'll only suggest ones you don't already take, and check in about once a month.</p>
+    body=`${lab}<h1>Do you take any supplements?</h1><p class="muted">We'll only suggest ones you don't already take, and check in about once a month.</p>
     <div class="row">${SUPPS.map(s=>`<button class="chip" data-os="${s.k}" aria-pressed="${d.supps.includes(s.k)}">${s.n}</button>`).join("")}</div>
-    ${nav("finish","Show my day")}`;
+    ${nav}`;
   }
-  return `<div class="top"><span class="brand">Cycle Kitchen</span></div>${steps}<div class="stack-lg">${body}</div>`;
+  return `<div class="top"><span class="brand">Cycle Kitchen</span></div>${prog}<div class="stack-lg">${body}</div>`;
 }
 function obReadManual(){
-  const o=ui.ob;document.querySelectorAll("[data-manual]").forEach(el=>{o.manual[+el.dataset.manual]=el.value});
+  const o=ui.ob;if(!o)return;document.querySelectorAll("[data-manual]").forEach(el=>{o.manual[+el.dataset.manual]=el.value});
   const pl=document.getElementById("pl");if(pl)o.data.periodLen=Math.min(10,Math.max(2,+pl.value||5));
   const oa=document.getElementById("oa");if(oa)o.data.otherAllergy=oa.value.trim().slice(0,80);
 }
-function obNext(){
-  const o=ui.ob;obReadManual();
-  if(o.step===2){
-    const man=o.manual.filter(Boolean).map(s=>({start:s,end:addDays(s,o.data.periodLen-1)}));
-    const all=mergePeriods(o.data.periods,man);
-    if(!all.length){const e=document.getElementById("ob-err");if(e)e.textContent="Add at least one period start date, or import a file.";return}
-    o.data.periods=all;
-  }
-  o.step++;render();
+function obHistoryOk(){
+  const o=ui.ob;
+  if(o.steps[o.i]!=="history")return true;
+  const man=o.manual.filter(Boolean).map(s=>({start:s,end:addDays(s,o.data.periodLen-1)}));
+  const all=mergePeriods(o.data.periods,man);
+  if(!all.length){const e=document.getElementById("ob-err");if(e)e.textContent="Add at least one period start date, or import a file.";return false}
+  o.data.periods=all;return true;
 }
+function obNext(){obReadManual();if(!obHistoryOk())return;ui.ob.i++;render();scrollTo(0,0)}
 function finishOnboarding(){
-  obReadManual();const d=ui.ob.data;
-  S={v:1,sample:false,onboarded:true,stage:d.stage,periods:d.periods,periodLen:d.periodLen,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,suppCheck:todayISO(),logs:{},tracker:ui.ob.tracker||"",source:d.source||"Logged in Cycle Kitchen"};
-  ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("You're all set");
+  obReadManual();if(!obHistoryOk())return;
+  const o=ui.ob,d=o.data;
+  if(o.mode==="import"){
+    S=Object.assign(freshState(),{sample:false,onboarded:true,setup:false,periods:d.periods,periodLen:d.periodLen,suppCheck:todayISO(),tracker:o.tracker||"",source:d.source||"Logged in Cycle Kitchen"});
+    ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("Here's your day");
+  }else{
+    Object.assign(S,{stage:d.stage,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,suppCheck:todayISO(),setup:true});
+    ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("All set. Your foods are tailored to you.");
+  }
+}
+function quickStart(){
+  const el=document.getElementById("w-date");const v=el&&el.value;ui.wDate=v||"";
+  const err=document.getElementById("w-err");
+  if(!v){if(err)err.textContent="Pick the date your last period started.";return}
+  if(v>todayISO()){if(err)err.textContent="That date is in the future. Pick the day your last period started.";return}
+  S=Object.assign(freshState(),{sample:false,onboarded:true,setup:false,periods:[{start:v,end:addDays(v,4)}],suppCheck:todayISO(),source:"Logged in Cycle Kitchen"});
+  ui.tab="today";save();render();scrollTo(0,0);
 }
 
 /* ---------- import ---------- */
@@ -872,7 +905,9 @@ function setLog(fn){S.logs=S.logs||{};const t=todayISO();const lg=S.logs[t]||{sy
 /* ---------- main render & events ---------- */
 function render(){
   let html;
-  if(ui.ob)html=viewOnboarding();
+  if(ui.booting&&!ui.ob)html=`<div class="top"><span class="brand">Cycle Kitchen</span></div><p class="muted">Loading your kitchen…</p>`;
+  else if(ui.ob)html=viewOnboarding();
+  else if(S.sample)html=viewWelcome();
   else if(ui.tab==="cycle")html=viewCycle();
   else if(ui.tab==="peri")html=viewPeri();
   else if(ui.tab==="supps")html=viewSupps();
@@ -893,7 +928,7 @@ document.addEventListener("click",e=>{
   if(ds.food){ui.food=ui.food===ds.food?null:ds.food;render();const b=document.querySelector(`[data-food="${ds.food}"]`);if(b)b.focus({preventScroll:true});return}
   if(ds.recipe){ui.recipe=ds.recipe;openSheet("recipe");return}
   if(ds.tab){closeSheet();go(ds.tab);return}
-  if(ds.ob){if(ds.ob==="next")obNext();else if(ds.ob==="back"){obReadManual();ui.ob.step--;render()}else if(ds.ob==="cancel"){ui.ob=null;render()}else if(ds.ob==="addrow"){obReadManual();ui.ob.manual.push("");render()}else if(ds.ob==="finish")finishOnboarding();return}
+  if(ds.ob){if(ds.ob==="next")obNext();else if(ds.ob==="back"){obReadManual();ui.ob.i--;render();scrollTo(0,0)}else if(ds.ob==="cancel"){ui.ob=null;render();scrollTo(0,0)}else if(ds.ob==="addrow"){obReadManual();ui.ob.manual.push("");render()}else if(ds.ob==="finish")finishOnboarding();return}
   if(ds.pick){ui.ob.data.stage=ds.pick;render();return}
   if(ds.al){obReadManual();toggle(ui.ob.data.allergies,ds.al);render();return}
   if(ds.di){obReadManual();toggle(ui.ob.data.diets,ds.di);render();return}
@@ -905,7 +940,11 @@ document.addEventListener("click",e=>{
   if(ds.sal){S.allergies=toggle(S.allergies||[],ds.sal);renderSheet();return}
   if(ds.sdi){S.diets=toggle(S.diets||[],ds.sdi);renderSheet();return}
   switch(ds.act){
-    case "start":startOnboarding();scrollTo(0,0);break;
+    case "start":startOnboarding();break;
+    case "quick-start":quickStart();break;
+    case "welcome-import":{const el=document.getElementById("w-date");ui.wDate=el?el.value:"";startImport();break}
+    case "setup":startSetup();break;
+    case "setup-later":ui.hideSetup=true;render();break;
     case "article":go("article");break;
     case "log":if(S.sample){startOnboarding();return}ui.otherDate=false;openSheet("log");break;
     case "import":if(!ensureReal())return;ui.importMsg="";ui.tracker=S.tracker||"";openSheet("import");break;
@@ -921,7 +960,7 @@ document.addEventListener("click",e=>{
     case "toggle-peri":if(!ensureReal())return;S.stage=S.stage==="peri"?"cycle":"peri";save();render();break;
     case "delete":ui.confirmDelete=true;render();break;
     case "delete-no":ui.confirmDelete=false;render();break;
-    case "delete-yes":{ui.confirmDelete=false;const done=()=>{S=sampleState();render();toast("Your data has been deleted")};
+    case "delete-yes":{ui.confirmDelete=false;const done=()=>{S=freshState();ui.tab="today";render();scrollTo(0,0);toast("Your data has been deleted")};
       try{localStorage.removeItem("ck-state")}catch(e){}
       if(store.mode==="db"&&store.ref){saving=saving.then(()=>store.ref.delete()).then(done,done)}else done();break}
   }
@@ -940,11 +979,14 @@ document.addEventListener("change",e=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ui.sheet){closeSheet();render()}});
 
 /* ---------- boot ---------- */
+const local0=lsGet();
+if(local0&&local0.onboarded){S=local0;store.mode="local";ui.booting=false}
+if(!inClaude)ui.booting=false;
 render();
+setTimeout(()=>{if(ui.booting){ui.booting=false;render()}},6000);
 (async function(){
-  const local=lsGet();
-  if(local&&local.onboarded){S=local;store.mode="local";render()}
-  if(!window.claude||!window.claude.use)return;
+  const local=local0;
+  if(!inClaude)return;
   try{
     const [user,db]=await Promise.all([claude.use("user"),claude.use("db")]);
     if(user){store.me=await user.me();store.uid=store.me.id}
@@ -956,8 +998,8 @@ render();
       else store.mode="db";
       if(S.sample)store.mode="db";
     }
-    render();
-  }catch(e){render()}
+    ui.booting=false;render();
+  }catch(e){ui.booting=false;render()}
 })();
 })();
 </script>
