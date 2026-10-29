@@ -121,6 +121,8 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .feats .fd{width:22px;height:22px;border-radius:50%;flex:none}
 .mood{display:inline-flex;align-items:center;gap:6px;background:var(--hi);color:var(--on-hi);border-radius:999px;padding:5px 12px 5px 9px;font-weight:600;font-size:.9rem}
 .mood svg{width:18px;height:18px}
+.mood.next-m{background:var(--surface);color:var(--fg);font-size:.82rem;padding:4px 10px 4px 8px}
+.mood.next-m svg{width:16px;height:16px}
 .next{display:flex;flex-wrap:wrap;gap:6px}
 .next span{background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.85rem}
 
@@ -551,7 +553,7 @@ function viewToday(){
     </section>
     ${seedFree()?"":`<button class="card article-card" data-act="article"><span class="art-wrap">${seedArt()}</span><span class="body stack" style="gap:6px"><span class="label">Read · 3 min</span><span class="h3">Seed cycling, explained</span><span class="small muted">What it is, how it's meant to work, and what the research says so far.</span><span class="small" style="font-weight:600">Read the article ›</span></span></button>`}
     <section class="card soft stack" aria-labelledby="next-h">
-      <h3 id="next-h">Coming up next: ${esc(PHASES[nx].name)}</h3>
+      <div class="row" style="justify-content:space-between;gap:8px"><h3 id="next-h">Coming up next: ${esc(PHASES[nx].name)}</h3><span class="mood next-m">${PHASE_ICON[nx]}${esc(PHASES[nx].mood)}</span></div>
       <p class="small muted">${a.phase==="luteal"?`Period expected ${a.irregular?`between ${fmt(a.range[0])} and ${fmt(a.range[1])}`:`around ${fmt(a.nextStart)}`}.`:"Worth adding to your next shop:"}</p>
       <div class="next">${foodsFor(nx).slice(0,6).map(f=>`<span>${esc(f.n)}</span>`).join("")}</div>
     </section>
