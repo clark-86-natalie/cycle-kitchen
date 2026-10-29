@@ -519,7 +519,8 @@ function viewToday(){
   setPhase(a.phase);
   const P=PHASES[a.phase];const nx=ORDER[(ORDER.indexOf(a.phase)+1)%4];
   const t=todayISO();const lg=(S.logs||{})[t]||{};
-  const syms=(lg.symptoms||[]).map(k=>SYMPTOMS.find(s=>s.k===k)).filter(Boolean);
+  const syms=(lg.symptoms||[]).filter(k=>k!=="sleep").map(k=>SYMPTOMS.find(s=>s.k===k)).filter(Boolean);
+  if(lg.sleep==="bad")syms.push(SYMPTOMS.find(s=>s.k==="sleep"));
   let left;
   if(a.phase==="luteal"&&a.late)left=a.irregular?"Your period could start any day":"Your period is due, it could start any day";
   else left=a.daysLeft<=0?"Last day of this phase":`About ${a.daysLeft} day${a.daysLeft===1?"":"s"} left in this phase`;
@@ -869,7 +870,7 @@ function renderSheet(){
     const ps=(S.periods||[]).slice().sort((a,b)=>a.start<b.start?-1:1);const last=ps[ps.length-1];
     const open=last&&!last.end&&diff(t,last.start)<=10;
     const peri=S.stage==="peri";
-    const symList=SYMPTOMS.filter(s=>peri||!s.peri);
+    const symList=SYMPTOMS.filter(s=>s.k!=="sleep"&&(peri||!s.peri));
     inner=`<h2 id="sheet-h">Log today</h2>
     <div class="stack"><span class="label">Period</span>
       <div class="row">${open?`<button class="btn small" data-act="p-end">My period ended today</button>`:`<button class="btn small" data-act="p-start">My period started today</button>`}
