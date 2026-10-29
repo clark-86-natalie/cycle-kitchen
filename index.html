@@ -375,8 +375,45 @@ function trackerBlock(prefix,chosen,msg){
   </div>`;
 }
 const DISCLAIMER="Cycle Kitchen offers general wellbeing ideas, not medical advice. If you're trying to conceive or breastfeeding, some herbal teas and supplements we mention may not be suitable, so check with a pharmacist first.";
-const CONDITIONS=[["endo","Endometriosis"],["pcos","PCOS"],["pmdd","PMDD"]];
+const CONDITIONS=[["contra","Hormonal contraception"],["heavy","Heavy periods or fibroids"],["ibs","IBS"],["migraine","Menstrual migraine"],["pcos","PCOS"],["endo","Endometriosis"],["thyroid","Thyroid condition"],["pmdd","PMDD"],["adeno","Adenomyosis"]];
+const COND_GROUP_OF={adeno:"endo"};
 const COND_GROUPS={
+  contra:{title:"Top up B vitamins",tag:"For hormonal contraception",why:"Some research suggests the pill can lower levels of B vitamins and magnesium, so it's worth eating plenty of foods rich in them.",foods:[
+    {n:"Leafy greens",why:"Folate and magnesium",t:[],w:["Wilted into pasta or eggs","In a big salad","Blended into a smoothie"]},
+    {n:"Eggs",why:"Vitamin B12",t:["egg"],w:["Boiled as a snack","Scrambled on toast"]},
+    {n:"Chickpeas",why:"Vitamin B6",t:[],w:["Hummus","Chickpea curry"]},
+    {n:"Wholegrains",why:"B vitamins and magnesium",t:["gluten"],w:["Wholegrain toast","Brown rice or wholewheat pasta"]},
+    {n:"Salmon",why:"Vitamin B12 and omega-3s",t:["fish"],w:["Baked with greens","Salmon poke bowl"]}
+  ]},
+  heavy:{title:"Boost your iron",tag:"For heavy periods or fibroids",when:a=>a.phase==="menstrual"||a.phase==="follicular",why:"Heavy periods use up a lot of iron, which can leave you tired. Pairing iron-rich foods with vitamin C helps your body absorb more of it.",
+    note:"If you're always tired, a simple blood test for iron is worth asking about.",foods:[
+    {n:"Red meat",why:"The iron your body absorbs most easily",t:["meat"],w:["Beef stew","Lean mince in a ragu"]},
+    {n:"Lentils and beans",why:"Plant iron and protein",t:[],w:["Red lentil dhal","Bean chilli"]},
+    {n:"Spinach and kale",why:"Plant iron and folate",t:[],w:["Wilted into eggs or pasta","Sautéed with garlic"]},
+    {n:"Peppers and oranges",why:"Vitamin C to help you absorb iron",t:[],w:["Raw peppers with hummus","An orange after an iron-rich meal"]},
+    {n:"Fortified breakfast cereal",why:"Added iron",t:["gluten"],w:["With milk and berries"]}
+  ]},
+  ibs:{title:"Gentle on your gut",tag:"For IBS",when:a=>a.phase==="menstrual"||(a.phase==="luteal"&&a.day>=a.ovDay+5),why:"Gut symptoms often flare around your period. Gentle, easy-to-digest foods can help. Everyone's triggers are different, but many people find beans, onions and very rich foods harder at this time.",foods:[
+    {n:"Ginger",why:"Can settle the stomach",t:[],w:["Fresh ginger tea","Grated into soups"]},
+    {n:"Rice",why:"Easy to digest",t:[],w:["Plain rice with steamed veg","Rice porridge"]},
+    {n:"Oats",why:"Gentle, soluble fibre",t:["gluten"],w:["Porridge","Overnight oats"]},
+    {n:"Cooked carrots and courgette",why:"Soft, gentle veg",t:[],w:["Roasted","In a simple soup"]},
+    {n:"Kiwi",why:"Can help keep things moving",t:[],w:["Two a day as a snack","Sliced on yoghurt"]}
+  ]},
+  migraine:{title:"Head off migraines",tag:"For menstrual migraine",when:a=>(a.phase==="luteal"&&a.day>=a.avg-2)||(a.phase==="menstrual"&&a.day<=3),why:"Falling oestrogen just before your period can trigger migraines. Magnesium may help, and regular meals and enough water matter, as skipped meals and dehydration are common triggers.",foods:[
+    {n:"Leafy greens",why:"Magnesium",t:[],w:["Added to every meal","Green smoothies"]},
+    {n:"Pumpkin seeds",why:"Magnesium",t:["seeds"],w:["Toasted as a snack","Sprinkled on salads"]},
+    {n:"Almonds",why:"Magnesium",t:["nuts"],w:["A handful as a snack"]},
+    {n:"Bananas",why:"Magnesium and steady energy",t:[],w:["As a quick snack between meals"]},
+    {n:"Regular meals and snacks",why:"Steady blood sugar helps prevent triggers",t:[],w:["Don't skip breakfast","Keep a snack in your bag"]}
+  ]},
+  thyroid:{title:"Support your thyroid",tag:"For thyroid conditions",why:"Your thyroid uses selenium and iodine to make its hormones, and thyroid conditions can affect your cycle.",
+    note:"If you take thyroid medication, have it on an empty stomach and keep coffee, calcium, iron and soy a few hours away from it, as they can stop it working as well.",foods:[
+    {n:"Brazil nuts",why:"Selenium: one or two a day is plenty",t:["nuts"],w:["One or two as a snack"]},
+    {n:"Eggs",why:"Iodine and selenium",t:["egg"],w:["Boiled","In an omelette"]},
+    {n:"White fish or salmon",why:"Iodine and selenium",t:["fish"],w:["Fish tacos","Baked with lemon"]},
+    {n:"Milk and yoghurt",why:"Iodine",t:["dairy"],w:["Yoghurt with fruit","In porridge"]}
+  ]},
   endo:{title:"Calm inflammation",tag:"For endometriosis",why:"Omega-3s and antioxidants may help calm the inflammation behind endometriosis pain. Some people also find alcohol and lots of red meat make their symptoms worse, so it's worth noticing yours.",foods:[
     {n:"Salmon or mackerel",why:"Omega-3s",t:["fish"],w:["Baked salmon with greens","Mackerel on toast","Sardines with tomatoes"]},
     {n:"Berries",why:"Vitamin C and antioxidants",t:[],w:["On porridge or yoghurt","By the handful","Blended into a smoothie"]},
@@ -504,8 +541,11 @@ function groupsFor(phase){
 function foodsFor(phase){return groupsFor(phase).flatMap(g=>g.foods)}
 function findFood(key){const [p,gi,fi]=String(key).split("|");if(p==="cond"){const c=COND_GROUPS[gi];return c?c.foods[+fi]:null}const g=GROUPS[p]&&GROUPS[p][+gi];return g?g.foods[+fi]:null}
 function condGroups(a){
-  return (S.conditions||[]).filter(k=>COND_GROUPS[k]).filter(k=>k!=="pmdd"||(a.phase==="luteal"&&a.day>=a.ovDay+5)).map(k=>{const c=COND_GROUPS[k];
-    return {title:c.title,tag:c.tag,why:c.why,note:c.note,foods:c.foods.map((f,fi)=>Object.assign({},f,{key:"cond|"+k+"|"+fi})).filter(f=>!blocked(f.t))}}).filter(g=>g.foods.length);
+  const mine=S.conditions||[];
+  const ids=[...new Set(CONDITIONS.map(c=>c[0]).filter(k=>mine.includes(k)).map(k=>COND_GROUP_OF[k]||k))];
+  return ids.filter(k=>COND_GROUPS[k]).filter(k=>{const c=COND_GROUPS[k];if(k==="pmdd")return a.phase==="luteal"&&a.day>=a.ovDay+5;return !c.when||c.when(a)}).map(k=>{const c=COND_GROUPS[k];
+    let tag=c.tag;if(k==="endo"){const l=[mine.includes("endo")&&"endometriosis",mine.includes("adeno")&&"adenomyosis"].filter(Boolean);tag="For "+l.join(" and ")}
+    return {title:c.title,tag,why:c.why,note:c.note,foods:c.foods.map((f,fi)=>Object.assign({},f,{key:"cond|"+k+"|"+fi})).filter(f=>!blocked(f.t))}}).filter(g=>g.foods.length);
 }
 function drinksCard(a){
   const d=DRINKS[a.phase];let items=d.items.slice();
@@ -609,6 +649,7 @@ function viewToday(){
     <div><div class="day">${esc(P.name)}</div><div class="row" style="margin-top:10px;gap:10px"><span class="mood">${PHASE_ICON[a.phase]}${esc(P.mood)}</span><span class="muted">Day ${a.day} of your cycle</span></div></div>
     ${strip(a)}
     <p class="small">${esc(left)}</p>
+    ${(S.conditions||[]).includes("contra")?`<p class="small muted">On the pill, implant or injection you may not have natural phases, so treat this as a rough guide. With a hormonal coil your natural cycle often carries on.</p>`:""}
   </section>
   <div class="stack-lg" style="margin-top:20px">
     ${S.setup===false&&!ui.hideSetup?`<section class="card hi stack" aria-labelledby="setup-h"><h3 id="setup-h">Finish setting up</h3><p class="small">Add any allergies, food preferences or health conditions so we can tailor these foods to you, plus your life stage and supplements. It takes about a minute.</p><div class="row"><button class="btn small" data-act="setup">Finish setting up</button><button class="link small" data-act="setup-later">Later</button></div></section>`:""}
