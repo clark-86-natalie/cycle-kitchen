@@ -123,6 +123,11 @@ input[type=date],input[type=text],input[type=number]{background:var(--surface2);
 .mood svg{width:18px;height:18px}
 .mood.next-m{background:var(--surface);color:var(--fg);font-size:.82rem;padding:4px 10px 4px 8px}
 .mood.next-m svg{width:16px;height:16px}
+.sips{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.sips li{display:flex;flex-direction:column;gap:2px;padding:12px 0;border-top:1px solid var(--line)}
+.sips li:first-child{border-top:0;padding-top:4px}
+.sips .tag{align-self:flex-start;margin:2px 0 2px}
+.fine{font-size:.78rem;line-height:1.45;color:var(--muted);margin-top:4px}
 .next{display:flex;flex-wrap:wrap;gap:6px}
 .next span{background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.85rem}
 
@@ -369,6 +374,53 @@ function trackerBlock(prefix,chosen,msg){
     ${msg?`<p class="small" role="status">${esc(msg)}</p>`:""}
   </div>`;
 }
+const DISCLAIMER="Cycle Kitchen offers general wellbeing ideas, not medical advice. If you're trying to conceive or breastfeeding, some herbal teas and supplements we mention may not be suitable, so check with a pharmacist first.";
+const CONDITIONS=[["endo","Endometriosis"],["pcos","PCOS"],["pmdd","PMDD"]];
+const COND_GROUPS={
+  endo:{title:"Calm inflammation",tag:"For endometriosis",why:"Omega-3s and antioxidants may help calm the inflammation behind endometriosis pain. Some people also find alcohol and lots of red meat make their symptoms worse, so it's worth noticing yours.",foods:[
+    {n:"Salmon or mackerel",why:"Omega-3s",t:["fish"],w:["Baked salmon with greens","Mackerel on toast","Sardines with tomatoes"]},
+    {n:"Berries",why:"Vitamin C and antioxidants",t:[],w:["On porridge or yoghurt","By the handful","Blended into a smoothie"]},
+    {n:"Extra virgin olive oil",why:"Healthy fats and plant compounds that calm inflammation",t:[],w:["Drizzled over roast veg","In salad dressings","For dipping bread"]},
+    {n:"Ginger",why:"May ease pain",t:[],w:["Fresh ginger tea","Grated into stir-fries and soups"]},
+    {n:"Ground flaxseed",why:"Plant omega-3s and fibre",t:["seeds"],w:["Stirred into porridge","Blended into a smoothie"]}
+  ]},
+  pcos:{title:"Steady blood sugar",tag:"For PCOS",why:"Pairing protein and fibre with slow carbs keeps your blood sugar steady, which can help with cycle regularity, energy and cravings.",foods:[
+    {n:"Lentils and beans",why:"Slow carbs with protein and fibre",t:[],w:["Lentil soup","Bean chilli","Hummus with veg"]},
+    {n:"Oats",why:"Fibre that slows down how fast sugar is released",t:["gluten"],w:["Overnight oats","Porridge topped with berries"]},
+    {n:"Eggs",why:"Protein to pair with carbs",t:["egg"],w:["Eggs on wholegrain toast","Veggie omelette"]},
+    {n:"Greek yoghurt",why:"Protein to keep you full",t:["dairy"],w:["With berries","As a dip with veg"]},
+    {n:"Cinnamon",why:"May support how your body handles sugar",t:[],w:["Sprinkled on porridge","Stirred into yoghurt","In curries and chilli"]}
+  ]},
+  pmdd:{title:"Support your mood before your period",tag:"For PMDD",why:"Calcium and vitamin B6 have some of the best evidence for easing premenstrual mood symptoms, and regular meals with slow carbs help keep your mood steadier.",
+    note:"If your mood ever feels overwhelming before your period, you don't have to manage it alone. Talking to your GP or someone you trust can really help.",foods:[
+    {n:"Yoghurt or fortified milks",why:"Calcium",t:[],w:[["Yoghurt with fruit",["dairy"]],"Fortified oat or soy milk in a latte or smoothie"]},
+    {n:"Leafy greens",why:"Calcium and magnesium",t:[],w:["Wilted into pasta or eggs","Added to every dinner"]},
+    {n:"Chickpeas",why:"Vitamin B6",t:[],w:["Hummus","Chickpea curry","Roasted as a snack"]},
+    {n:"Bananas",why:"Vitamin B6 and slow energy",t:[],w:["Sliced on porridge","In a smoothie"]},
+    {n:"Turkey",why:"Vitamin B6 and protein",t:["meat"],w:["Turkey meatballs","Turkey burgers"]}
+  ]}
+};
+const DRINKS={
+  menstrual:{note:"Warm drinks feel especially good right now.",items:[
+    {n:"Ginger tea",why:"Ginger has the best evidence of any drink for easing period pain."},
+    {n:"Hot chocolate",why:"Warm, comforting, and a source of magnesium."},
+    {n:"Orange juice with iron-rich meals",why:"Vitamin C helps you absorb iron. Tea and coffee can block it, so have those between meals."}]},
+  follicular:{note:"",items:[
+    {n:"Green tea",why:"Gentle caffeine and antioxidants. Green tea drinkers report less period pain."},
+    {n:"A smoothie or kefir",why:"Good for your gut, which helps your body process oestrogen.",t:[]}]},
+  ovulation:{note:"Cool and refreshing suits this phase.",items:[
+    {n:"Sparkling water with fruit",why:"Refreshing while you're more active."},
+    {n:"Iced green tea",why:"Antioxidants and a light lift."},
+    {n:"Coconut water after training",why:"Natural electrolytes to help you rehydrate."}]},
+  luteal:{note:"Warm drinks are soothing, especially later in this phase. You may also feel a little warmer and thirstier as your body temperature rises slightly.",items:[
+    {n:"Peppermint or fennel tea",why:"Can ease bloating and wind."},
+    {n:"Chamomile tea",why:"A calming bedtime drink that may help you sleep."},
+    {n:"Rooibos or decaf in the afternoon",why:"Caffeine-free, so it won't get in the way of sleep."}]}
+};
+const PERI_DRINKS=[
+  {n:"Cold water by the bed",why:"Handy for hot flushes and night sweats."},
+  {n:"Soy milk drinks",why:"Plant oestrogens that may help with hot flushes.",t:["soy"]}];
+const PCOS_DRINK={n:"Spearmint tea",why:"A small study found two cups a day lowered testosterone in women with PCOS.",tag:"For PCOS"};
 const PERI_HELPS=[
   ["Strength training","Lifting weights or any resistance work protects muscle and bone and helps mood and blood sugar. Two or three sessions a week is ideal, but whatever you can manage helps, even ten minutes of squats and press-ups at home."],
   ["Protein at every meal","Needs rise as oestrogen dips. Aim for a palm-sized portion each time."],
@@ -450,7 +502,20 @@ function groupsFor(phase){
     foods:g.foods.map((f,fi)=>Object.assign({},f,{key:phase+"|"+gi+"|"+fi})).filter(f=>!(f.swap&&!sf)&&!(f.seed&&sf)&&!blocked(f.t))})).filter(g=>g.foods.length);
 }
 function foodsFor(phase){return groupsFor(phase).flatMap(g=>g.foods)}
-function findFood(key){const [p,gi,fi]=String(key).split("|");const g=GROUPS[p]&&GROUPS[p][+gi];return g?g.foods[+fi]:null}
+function findFood(key){const [p,gi,fi]=String(key).split("|");if(p==="cond"){const c=COND_GROUPS[gi];return c?c.foods[+fi]:null}const g=GROUPS[p]&&GROUPS[p][+gi];return g?g.foods[+fi]:null}
+function condGroups(a){
+  return (S.conditions||[]).filter(k=>COND_GROUPS[k]).filter(k=>k!=="pmdd"||(a.phase==="luteal"&&a.day>=a.ovDay+5)).map(k=>{const c=COND_GROUPS[k];
+    return {title:c.title,tag:c.tag,why:c.why,note:c.note,foods:c.foods.map((f,fi)=>Object.assign({},f,{key:"cond|"+k+"|"+fi})).filter(f=>!blocked(f.t))}}).filter(g=>g.foods.length);
+}
+function drinksCard(a){
+  const d=DRINKS[a.phase];let items=d.items.slice();
+  if(S.stage==="peri")items=items.concat(PERI_DRINKS);
+  if((S.conditions||[]).includes("pcos"))items.push(PCOS_DRINK);
+  items=items.filter(x=>!blocked(x.t));
+  return `<section class="card stack" aria-labelledby="sip-h"><h2 id="sip-h">Sip this phase</h2>${d.note?`<p class="small muted">${esc(d.note)}</p>`:""}
+    <ul class="sips">${items.map(x=>`<li><b>${esc(x.n)}</b>${x.tag?`<span class="tag">${esc(x.tag)}</span>`:""}<span class="small muted">${esc(x.why)}</span></li>`).join("")}</ul>
+    <p class="small">Fancy a fizzy drink? Go for it. If you want steadier energy, sparkling water with a splash of juice works too.</p></section>`;
+}
 function waysFor(f){return f.w.map(w=>Array.isArray(w)?w:[w,[]]).filter(w=>!blocked(w[1])).map(w=>w[0])}
 const recipeOk=f=>f&&f.r&&!blocked(f.r.t);
 
@@ -503,15 +568,16 @@ function strip(a){
   return `<div class="strip" style="grid-template-columns:repeat(${n},1fr)" role="img" aria-label="Cycle day ${a.day} of about ${a.avg}">${h}</div><div class="legend"><span>Day 1</span><span>Ovulation ~ day ${a.ovDay}</span><span>Day ${a.avg}</span></div>`;
 }
 const PLUS='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>';
-function foodSection(phase){
-  return groupsFor(phase).map(g=>{
+function foodSection(phase,extra){
+  return (extra||[]).concat(groupsFor(phase)).map(g=>{
     const open=g.foods.find(f=>f.key===ui.food);
-    return `<div class="grp"><h3>${esc(g.title)}</h3><p class="why">${esc(g.why)}</p>
+    return `<div class="grp">${g.tag?`<span class="label">${esc(g.tag)}</span>`:""}<h3>${esc(g.title)}</h3><p class="why">${esc(g.why)}</p>
       <div class="fchips">${g.foods.map(f=>`<button class="fchip" data-food="${f.key}" aria-expanded="${f.key===ui.food}">${esc(f.n)}${PLUS}</button>`).join("")}</div>
       ${open?`<div class="fdetail stack"><div><b>${esc(open.n)}</b><p class="small muted">${esc(open.why)}</p></div>
         <div><span class="label">Quick ideas</span><ul class="clean small" style="margin-top:6px">${waysFor(open).map(w=>`<li>${esc(w)}</li>`).join("")}</ul></div>
         ${recipeOk(open)?`<button class="recipe-row" data-recipe="${open.key}"><span><span class="label" style="display:block">Recipe</span>${esc(open.r.title)}</span><span class="small muted" style="white-space:nowrap">${esc(open.r.time.split(",")[0])} ›</span></button>`:""}
       </div>`:""}
+      ${g.note?`<p class="small" style="margin-top:12px">${esc(g.note)}</p>`:""}
       ${g.seeds&&!seedFree()?`<button class="link small" data-act="article">What is seed cycling?</button>`:""}
     </div>`}).join("");
 }
@@ -545,12 +611,13 @@ function viewToday(){
     <p class="small">${esc(left)}</p>
   </section>
   <div class="stack-lg" style="margin-top:20px">
-    ${S.setup===false&&!ui.hideSetup?`<section class="card hi stack" aria-labelledby="setup-h"><h3 id="setup-h">Finish setting up</h3><p class="small">Add any allergies or food preferences so we can tailor these foods to you, plus your life stage and supplements. It takes about a minute.</p><div class="row"><button class="btn small" data-act="setup">Finish setting up</button><button class="link small" data-act="setup-later">Later</button></div></section>`:""}
+    ${S.setup===false&&!ui.hideSetup?`<section class="card hi stack" aria-labelledby="setup-h"><h3 id="setup-h">Finish setting up</h3><p class="small">Add any allergies, food preferences or health conditions so we can tailor these foods to you, plus your life stage and supplements. It takes about a minute.</p><div class="row"><button class="btn small" data-act="setup">Finish setting up</button><button class="link small" data-act="setup-later">Later</button></div></section>`:""}
     ${symCard}
     <section class="card" aria-labelledby="eat-h">
       <h2 id="eat-h">${syms.length?"Also good this phase":"Eat this phase"}</h2>
-      ${foodSection(a.phase)}
+      ${foodSection(a.phase,condGroups(a))}
     </section>
+    ${drinksCard(a)}
     ${seedFree()?"":`<button class="card article-card" data-act="article"><span class="art-wrap">${seedArt()}</span><span class="body stack" style="gap:6px"><span class="label">Read · 3 min</span><span class="h3">Seed cycling, explained</span><span class="small muted">What it is, how it's meant to work, and what the research says so far.</span><span class="small" style="font-weight:600">Read the article ›</span></span></button>`}
     <section class="card soft stack" aria-labelledby="next-h">
       <div class="row" style="justify-content:space-between;gap:8px"><h3 id="next-h">Coming up next: ${esc(PHASES[nx].name)}</h3><span class="mood next-m">${PHASE_ICON[nx]}${esc(PHASES[nx].mood)}</span></div>
@@ -634,6 +701,7 @@ function viewSupps(){
   <div class="stack"><h1>Supplements</h1><p class="muted">Grouped by life stage. Mark the ones you take and we'll stop suggesting them. Check with a pharmacist or GP before starting something new.</p></div>
   <section class="stack"><span class="label">${stage==="peri"?"For perimenopause":"For your cycling years"}</span>${SUPPS.filter(s=>s.stage.includes(stage)).map(card).join("")}</section>
   <section class="stack"><span class="label">${stage==="peri"?"Also useful in your cycling years":"Coming into perimenopause"}</span>${SUPPS.filter(s=>!s.stage.includes(stage)).map(card).join("")}</section>
+  <p class="small muted">${esc(DISCLAIMER)}</p>
   </div>`;
 }
 
@@ -650,6 +718,8 @@ function viewMore(){
   <section class="card stack"><div class="row" style="justify-content:space-between"><span class="label">Food needs</span><button class="link small" data-act="edit-diet">Edit</button></div>
     <p>${al.length?"Avoiding: "+esc(al.join(", ")):"No allergies set"}</p><p class="small muted">${di.length?esc(di.join(", ")):"No dietary preferences set"}</p></section>
   <button class="card stack" data-tab="supps" style="text-align:left;border:0;cursor:pointer;font:inherit;color:inherit"><span class="label">Supplements</span><span>${(S.supps||[]).length?esc((S.supps||[]).map(k=>(SUPPS.find(s=>s.k===k)||{n:k}).n).join(", ")):"None marked"} ›</span></button>
+  <section class="card stack"><span class="label">Health conditions</span><div class="row">${CONDITIONS.map(x=>`<button class="chip" data-scond="${x[0]}" aria-pressed="${(S.conditions||[]).includes(x[0])}">${x[1]}</button>`).join("")}</div>
+    <p class="small muted">Optional. We'll add foods that may help. This stays private to you.</p></section>
   <section class="card stack"><span class="label">Appearance</span><div class="row">
     ${[["auto","Automatic"],["light","Light"],["dark","Dark"]].map(x=>`<button class="chip" data-mode="${x[0]}" aria-pressed="${modePref===x[0]}">${x[1]}</button>`).join("")}</div>
     <p class="small muted">Automatic follows your phone's setting.</p></section>
@@ -659,15 +729,15 @@ function viewMore(){
     <ul class="clean small"><li>Your cycle, symptom and sleep data is never sold or shared.</li><li>Only you can see it. It's kept in your own private space, not visible to anyone else who opens this app.</li><li>You can delete everything at any time.</li></ul>
     ${S.sample?"":(ui.confirmDelete?`<p class="small">This permanently removes your periods, logs and settings.</p><div class="row"><button class="btn small" data-act="delete-yes">Delete everything</button><button class="btn small ghost" data-act="delete-no">Keep my data</button></div>`:`<button class="link small" data-act="delete" style="align-self:flex-start">Delete my data</button>`)}
   </section>
-  <p class="small muted">Cycle Kitchen is a prototype. Suggestions are general wellbeing information, not medical advice.</p>
+  <p class="small muted">${esc(DISCLAIMER)}</p>
   </div>`;
 }
 
 /* ---------- onboarding ---------- */
 function startOnboarding(){ui.ob=null;ui.tab="today";render();scrollTo(0,0)}
-function obData(){return {stage:S.stage||"cycle",periods:(S.periods||[]).slice(),periodLen:S.periodLen||5,allergies:(S.allergies||[]).slice(),diets:(S.diets||[]).slice(),otherAllergy:S.otherAllergy||"",supps:(S.supps||[]).slice(),source:S.source||""}}
+function obData(){return {stage:S.stage||"cycle",periods:(S.periods||[]).slice(),periodLen:S.periodLen||5,allergies:(S.allergies||[]).slice(),diets:(S.diets||[]).slice(),otherAllergy:S.otherAllergy||"",supps:(S.supps||[]).slice(),conditions:(S.conditions||[]).slice(),source:S.source||""}}
 function startImport(){ui.ob={mode:"import",steps:["history"],i:0,data:obData(),manual:[""],importMsg:"",tracker:""};render();scrollTo(0,0)}
-function startSetup(){ui.ob={mode:"setup",steps:["stage","food","supps"],i:0,data:obData(),manual:[""],importMsg:"",tracker:S.tracker||""};render();scrollTo(0,0)}
+function startSetup(){ui.ob={mode:"setup",steps:["stage","food","conditions","supps"],i:0,data:obData(),manual:[""],importMsg:"",tracker:S.tracker||""};render();scrollTo(0,0)}
 function viewWelcome(){
   setPhase("");
   const name=store.me&&store.me.name;
@@ -682,6 +752,7 @@ function viewWelcome(){
       <p class="small" id="w-err" role="alert" style="color:var(--accent)"></p>
       <button class="btn block" data-act="quick-start">Let's eat</button>
       <button class="btn ghost block" data-act="welcome-import">Import from Flo, Clue or another app</button>
+      <p class="fine">${esc(DISCLAIMER)}</p>
     </div>
     <ul class="feats">
       <li><span class="fd" style="background:#B8A6E3"></span>What to eat today, and why it helps</li>
@@ -724,6 +795,10 @@ function viewOnboarding(){
     <div class="card stack"><b>Preferences</b><div class="row">${DIETS.map(x=>`<button class="chip" data-di="${x[0]}" aria-pressed="${d.diets.includes(x[0])}">${x[1]}</button>`).join("")}</div></div>
     ${d.allergies.includes("seeds")?`<p class="small muted">Seed cycling will be swapped for seed-free foods with the same nutrients.</p>`:""}
     ${nav}`;
+  }else if(step==="conditions"){
+    body=`${lab}<h1>Do any of these apply to you?</h1><p class="muted">Optional. We'll add foods that may help. This stays private to you.</p>
+    <div class="row">${CONDITIONS.map(x=>`<button class="chip" data-cond="${x[0]}" aria-pressed="${d.conditions.includes(x[0])}">${x[1]}</button>`).join("")}<button class="chip" data-cond="none" aria-pressed="${!d.conditions.length&&o.condNone===true}">None of these</button></div>
+    ${nav}`;
   }else{
     body=`${lab}<h1>Do you take any supplements?</h1><p class="muted">We'll only suggest ones you don't already take, and check in about once a month.</p>
     <div class="row">${SUPPS.map(s=>`<button class="chip" data-os="${s.k}" aria-pressed="${d.supps.includes(s.k)}">${s.n}</button>`).join("")}</div>
@@ -752,7 +827,7 @@ function finishOnboarding(){
     S=Object.assign(freshState(),{sample:false,onboarded:true,setup:false,periods:d.periods,periodLen:d.periodLen,suppCheck:todayISO(),tracker:o.tracker||"",source:d.source||"Logged in Cycle Kitchen"});
     ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("You're all set");
   }else{
-    Object.assign(S,{stage:d.stage,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,suppCheck:todayISO(),setup:true});
+    Object.assign(S,{stage:d.stage,allergies:d.allergies,diets:d.diets,otherAllergy:d.otherAllergy,supps:d.supps,conditions:d.conditions,suppCheck:todayISO(),setup:true});
     ui.ob=null;ui.tab="today";save();render();scrollTo(0,0);toast("All set. Your foods are tailored to you.");
   }
 }
@@ -930,7 +1005,7 @@ function toggle(arr,k){const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else arr.p
 function ensureReal(){if(S.sample){startOnboarding();return false}return true}
 
 document.addEventListener("click",e=>{
-  const el=e.target.closest("[data-mode],[data-food],[data-recipe],[data-tab],[data-act],[data-ob],[data-pick],[data-al],[data-di],[data-os],[data-sym],[data-sleep],[data-supp],[data-stage],[data-sal],[data-sdi]");
+  const el=e.target.closest("[data-cond],[data-scond],[data-mode],[data-food],[data-recipe],[data-tab],[data-act],[data-ob],[data-pick],[data-al],[data-di],[data-os],[data-sym],[data-sleep],[data-supp],[data-stage],[data-sal],[data-sdi]");
   if(!el)return;const ds=el.dataset;
   if(ds.act==="backdrop"&&e.target!==el)return;
   if(ds.mode){modePref=ds.mode;try{localStorage.setItem("ck-mode",modePref)}catch(e){}applyMode();render();return}
@@ -942,6 +1017,8 @@ document.addEventListener("click",e=>{
   if(ds.al){obReadManual();toggle(ui.ob.data.allergies,ds.al);render();return}
   if(ds.di){obReadManual();toggle(ui.ob.data.diets,ds.di);render();return}
   if(ds.os){toggle(ui.ob.data.supps,ds.os);render();return}
+  if(ds.cond){const d=ui.ob.data;if(ds.cond==="none"){d.conditions=[];ui.ob.condNone=true}else{toggle(d.conditions,ds.cond);ui.ob.condNone=false}render();return}
+  if(ds.scond){S.conditions=toggle(S.conditions||[],ds.scond);save();render();return}
   if(ds.sym){if(S.sample&&!confirmLeaveSample())return;setLog(lg=>toggle(lg.symptoms,ds.sym));renderSheet();return}
   if(ds.sleep){if(S.sample&&!confirmLeaveSample())return;setLog(lg=>{lg.sleep=lg.sleep===ds.sleep?null:ds.sleep});renderSheet();return}
   if(ds.supp){if(!ensureReal())return;S.supps=toggle(S.supps||[],ds.supp);S.suppCheck=todayISO();save();render();return}
